@@ -10,6 +10,7 @@ import { useAppContext } from "../../../store/AppContext";
 import { formatIdr } from "../../../utils/format";
 import { Button } from "../../atoms/Button";
 import { Input } from "../../atoms/Input";
+import { createOrder } from "../../../services/public/checkoutService";
 
 export const CartSidebar: React.FC = () => {
   const { isCartOpen, setIsCartOpen, cart, cartTotal, dispatch, setToast } =
@@ -24,12 +25,15 @@ export const CartSidebar: React.FC = () => {
     phone: "",
     address: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     const newErrors = {
       name: checkoutData.name.trim() ? "" : "Nama lengkap wajib diisi.",
       phone: checkoutData.phone.trim() ? "" : "Nomor WhatsApp wajib diisi.",
-      address: checkoutData.address.trim() ? "" : "Alamat pengiriman wajib diisi.",
+      address: checkoutData.address.trim()
+        ? ""
+        : "Alamat pengiriman wajib diisi.",
     };
 
     setErrors(newErrors);
@@ -40,27 +44,49 @@ export const CartSidebar: React.FC = () => {
       return;
     }
 
-    const phoneWa = SHOP_INFO.phoneWa;
-    let text = `Halo ${SHOP_INFO.name}, saya ${checkoutData.name} ingin memesan bunga:\n\n`;
+    setIsSubmitting(true);
 
-    cart.forEach((item, i) => {
-      text += `${i + 1}. ${item.name} (${item.qty}x) - ${formatIdr(item.price * item.qty)}\n`;
-      if (item.variantsText) {
-        text += `   [Varian: ${item.variantsText}]\n`;
+    try {
+      // Save order to database
+      const orderItemsData = cart.map((item) => ({
+        productId: Number(item.id),
+        productName: item.name,
+        productImage: item.image,
+        productPrice: item.price.toString(),
+        productCategory: item.category || "General",
+        quantity: item.qty,
+        variantDetails: item.variantDetails || [],
+        notes: item.notes,
+      }));
+
+      const res = await createOrder({
+        customerName: checkoutData.name,
+        customerPhone: checkoutData.phone,
+        customerAddress: checkoutData.address,
+        totalAmount: cartTotal.toString(),
+        items: orderItemsData,
+      });
+
+      if (!res.success) {
+        setToast({ message: "Gagal memproses pesanan, silakan coba lagi." });
+        setTimeout(() => setToast(null), 3000);
+        setIsSubmitting(false);
+        return;
       }
-    });
 
-    text += `\n*Total: ${formatIdr(cartTotal)}*\n`;
-    text += `\nAlamat Pengiriman:\n${checkoutData.address}\n`;
-    text += `\nNo. HP/WA Pembeli: ${checkoutData.phone}\n`;
-    text += `\nMohon info ketersediaannya, terima kasih!`;
+      // Clear cart after checkout
+      dispatch({ type: 'CLEAR_CART' });
+      setIsCartOpen(false);
 
-    const waUrl = `https://wa.me/${phoneWa}?text=${encodeURIComponent(text)}`;
-    window.open(waUrl, "_blank");
-
-    // Optional: Clear cart after checkout
-    // dispatch({ type: 'CLEAR_CART' });
-    setIsCartOpen(false);
+      // Redirect to Order Detail Page
+      window.location.href = `/orders/${res.orderId}`;
+    } catch (error) {
+      console.error(error);
+      setToast({ message: "Terjadi kesalahan sistem." });
+      setTimeout(() => setToast(null), 3000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -130,6 +156,11 @@ export const CartSidebar: React.FC = () => {
                           {item.variantsText && (
                             <p className="font-sans text-xs text-[#829E8D] mb-1">
                               {item.variantsText}
+                            </p>
+                          )}
+                          {item.notes && (
+                            <p className="font-sans text-[10px] text-gray-500 italic bg-gray-50 p-1.5 rounded border border-gray-100 mb-1">
+                              Catatan: {item.notes}
                             </p>
                           )}
                           <p className="font-sans text-sm text-[#5A635E]">
@@ -234,7 +265,9 @@ export const CartSidebar: React.FC = () => {
                       </label>
                       <textarea
                         id="address-textarea"
-                        className={`w-full border-b border-[#E8D9D2] bg-transparent py-2 px-1 focus:outline-none focus:border-[#829E8D] transition-colors font-sans text-[#2C302E] resize-none ${errors.address ? "border-red-400 focus:border-red-400" : ""
+                        className={`w-full border-b border-[#E8D9D2] bg-transparent py-2 px-1 focus:outline-none focus:border-[#829E8D] transition-colors font-sans text-[#2C302E] resize-none ${errors.address
+                          ? "border-red-400 focus:border-red-400"
+                          : ""
                           }`}
                         rows={3}
                         placeholder="Jl. Mawar No. 1..."
@@ -244,7 +277,8 @@ export const CartSidebar: React.FC = () => {
                             ...checkoutData,
                             address: e.target.value,
                           });
-                          if (errors.address) setErrors({ ...errors, address: "" });
+                          if (errors.address)
+                            setErrors({ ...errors, address: "" });
                         }}
                       />
                       {errors.address && (
@@ -262,10 +296,11 @@ export const CartSidebar: React.FC = () => {
             {cart.length > 0 && (
               <div className="p-6 bg-[#FAFAF7] border-t border-[#E8D9D2]">
                 <Button
-                  className="w-full bg-[#25D366] hover:bg-[#128C7E] border-0"
+                  className={`w-full bg-[#25D366] hover:bg-[#128C7E] border-0 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                   onClick={handleCheckout}
+                  disabled={isSubmitting}
                 >
-                  Checkout via WhatsApp
+                  {isSubmitting ? 'Memproses...' : 'Checkout via WhatsApp'}
                 </Button>
               </div>
             )}

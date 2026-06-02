@@ -152,7 +152,7 @@ export const FloatingWidgets: React.FC = () => {
             {/* Header */}
             <div className="bg-[#829E8D] p-4 flex justify-between items-center text-white">
               <div className="flex items-center gap-2">
-                <Bot size={20} />
+                <Image src={"/images/bot.png"} width={40} height={40} alt="AI Assistant" className="rounded-full" />
                 <span className="font-playfair text-lg font-medium">
                   {SHOP_INFO.name} AI Assistant
                 </span>
@@ -238,7 +238,7 @@ export const FloatingWidgets: React.FC = () => {
                 size={18}
                 className="text-[#829E8D] group-hover:animate-pulse"
               />{" "}
-              Tanya AI Assistant
+              Tanya Asisten Kami
             </button>
           </motion.div>
         )}
@@ -249,11 +249,10 @@ export const FloatingWidgets: React.FC = () => {
         <button
           type="button"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className={`w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 cursor-pointer ${
-            isMenuOpen
-              ? "bg-[#2C302E] text-white rotate-90"
-              : "bg-[#829E8D] text-white hover:bg-[#6c8575] hover:scale-105"
-          }`}
+          className={`w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 cursor-pointer ${isMenuOpen
+            ? "bg-[#2C302E] text-white rotate-90"
+            : "bg-[#829E8D] text-white hover:bg-[#6c8575] hover:scale-105"
+            }`}
           aria-label="Toggle contact menu"
         >
           {isMenuOpen ? (

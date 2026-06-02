@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { ProductList } from "../../../components/organisms/product/ProductList";
@@ -5,6 +6,37 @@ import { CATEGORIES, PRODUCTS } from "../../../constants/mockData";
 
 interface CategoryPageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: CategoryPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const category = CATEGORIES.find((c) => c.id === id);
+
+  if (!category) {
+    return {
+      title: "Kategori Tidak Ditemukan",
+    };
+  }
+
+  return {
+    title: category.name,
+    description: category.description,
+    openGraph: {
+      title: `${category.name} | Rangkaian Bunga Premium`,
+      description: category.description,
+      type: "website",
+      images: [
+        {
+          url: category.image,
+          width: 800,
+          height: 1000,
+          alt: category.name,
+        },
+      ],
+    },
+  };
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {

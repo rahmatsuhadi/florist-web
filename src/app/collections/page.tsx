@@ -1,46 +1,18 @@
-"use client";
+import type { Metadata } from "next";
+import { CollectionsPageClient } from "../../components/organisms/collections/CollectionsPageClient";
 
-import { motion } from "framer-motion";
-import { CategoryCard } from "../../components/molecules/category/CategoryCard";
-import { fadeInUp } from "../../constants/animations";
-import { CATEGORIES } from "../../constants/mockData";
+export const metadata: Metadata = {
+  title: "Koleksi Bunga Premium",
+  description:
+    "Pilih dan telusuri berbagai macam pilihan koleksi buket bunga premium untuk momen terindah Anda di L'Fleur Mattz.",
+  openGraph: {
+    title: "Koleksi Bunga Premium | L'Fleur Mattz Florist",
+    description:
+      "Telusuri berbagai macam pilihan koleksi buket bunga premium untuk wisuda, pernikahan, anniversary, dan momen spesial Anda.",
+    type: "website",
+  },
+};
 
-const SectionHeading = ({
-  title,
-  subtitle,
-}: {
-  title: string;
-  subtitle?: string;
-}) => (
-  <motion.div variants={fadeInUp} className="text-center mb-12 animate-fade-in">
-    <h1 className="font-playfair text-4xl md:text-5xl text-[#2C302E] mb-4">
-      {title}
-    </h1>
-    {subtitle && (
-      <p className="font-sans text-[#5A635E] max-w-2xl mx-auto">{subtitle}</p>
-    )}
-  </motion.div>
-);
-
-export default function Collections() {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="pt-32 pb-24 bg-[#FAFAF7] min-h-screen"
-    >
-      <div className="container mx-auto px-6">
-        <SectionHeading
-          title="Semua Kategori"
-          subtitle="Pilih kategori momen spesial Anda."
-        />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {CATEGORIES.map((cat) => (
-            <CategoryCard key={cat.id} category={cat} />
-          ))}
-        </div>
-      </div>
-    </motion.div>
-  );
+export default function CollectionsPage() {
+  return <CollectionsPageClient />;
 }

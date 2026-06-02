@@ -59,7 +59,7 @@ export default function Home() {
       exit={{ opacity: 0 }}
     >
       {/* Hero Section */}
-      <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden bg-black">
+      <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden bg-black [clip-path:inset(0)]">
         <div className="absolute inset-0 z-0">
           <AnimatePresence mode="popLayout">
             <motion.div
@@ -68,7 +68,7 @@ export default function Home() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 1.2, ease: "easeInOut" }}
-              className="absolute inset-0 w-full h-full"
+              className="fixed inset-0 w-full h-full"
             >
               <Image
                 src={currentBanner.image}

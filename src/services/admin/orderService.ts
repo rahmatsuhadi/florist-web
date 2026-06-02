@@ -4,12 +4,15 @@ import { db } from "@/db";
 import { orders, orderItems } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { payments } from "@/db/schema";
 
 export type OrderItemType = typeof orderItems.$inferSelect;
 export type OrderType = typeof orders.$inferSelect;
+export type PaymentType = typeof payments.$inferSelect;
 
 export type OrderWithItems = OrderType & {
   items: OrderItemType[];
+  payments?: PaymentType[];
 };
 
 export async function getOrders(): Promise<OrderWithItems[]> {

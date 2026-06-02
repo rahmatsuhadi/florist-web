@@ -24,8 +24,12 @@ export interface CreateOrderData {
   }[];
 }
 
+import { snap } from "@/lib/midtrans";
+import { payments } from "@/db/schema";
+
 export async function createOrder(data: CreateOrderData) {
   try {
+    // 1. Insert Order
     const [newOrder] = await db.insert(orders).values({
       customerName: data.customerName,
       customerPhone: data.customerPhone,
@@ -35,6 +39,7 @@ export async function createOrder(data: CreateOrderData) {
       status: "Menunggu Pembayaran",
     }).returning();
 
+    // 2. Insert Order Items
     const orderItemsToInsert = data.items.map(item => ({
       orderId: newOrder.id,
       productId: item.productId || null,
@@ -46,11 +51,53 @@ export async function createOrder(data: CreateOrderData) {
       variantDetails: item.variantDetails,
       notes: item.notes || null,
     }));
-
-
     await db.insert(orderItems).values(orderItemsToInsert);
 
-    return { success: true, orderId: newOrder.id };
+    // 3. Create initial Payment Record
+    const [newPayment] = await db.insert(payments).values({
+      orderId: newOrder.id,
+      amount: data.totalAmount,
+      status: "pending"
+    }).returning();
+
+    // 4. Request Midtrans Snap Token
+    const midtransParams = {
+      transaction_details: {
+        order_id: `PAY-${newPayment.id}`,
+        gross_amount: Number(data.totalAmount)
+      },
+      customer_details: {
+        first_name: data.customerName,
+        phone: data.customerPhone,
+        billing_address: {
+          first_name: data.customerName,
+          address: data.customerAddress,
+        }
+      }
+    };
+
+    let paymentToken = null;
+    let paymentUrl = null;
+
+    try {
+      const transaction = await snap.createTransaction(midtransParams);
+      paymentToken = transaction.token;
+      paymentUrl = transaction.redirect_url;
+
+      // 5. Update Payment Record with Token & URL
+      await db.update(payments)
+        .set({ paymentToken, paymentUrl })
+        .where(eq(payments.id, newPayment.id));
+    } catch (midtransError) {
+      console.error("Failed to generate Midtrans token:", midtransError);
+    }
+
+    return {
+      success: true,
+      orderId: newOrder.id,
+      paymentToken,
+      paymentUrl
+    };
   } catch (error) {
     console.error("Error creating order:", error);
     return { success: false, error: "Gagal membuat pesanan" };
@@ -96,13 +143,62 @@ export async function getPublicOrderById(id: number): Promise<OrderWithItems | n
 
     const order = orderResults[0];
     const items = await db.select().from(orderItems).where(eq(orderItems.orderId, id));
+    const orderPayments = await db.select().from(payments).where(eq(payments.orderId, id));
 
     return {
       ...order,
-      items
+      items,
+      payments: orderPayments
     };
   } catch (error) {
     console.error("Error fetching public order:", error);
     return null;
+  }
+}
+
+export async function generateNewPaymentToken(orderId: number) {
+  try {
+    const orderResults = await db.select().from(orders).where(eq(orders.id, orderId)).limit(1);
+    if (orderResults.length === 0) return { success: false, error: "Pesanan tidak ditemukan" };
+    const order = orderResults[0];
+
+    // Create a new Payment Record (this ensures we have a log of multiple attempts)
+    const [newPayment] = await db.insert(payments).values({
+      orderId: order.id,
+      amount: order.totalAmount,
+      status: "pending"
+    }).returning();
+
+    const midtransParams = {
+      transaction_details: {
+        order_id: `PAY-${newPayment.id}`,
+        gross_amount: Number(order.totalAmount)
+      },
+      customer_details: {
+        first_name: order.customerName,
+        phone: order.customerPhone,
+        billing_address: {
+          first_name: order.customerName,
+          address: order.customerAddress || "",
+        }
+      }
+    };
+
+    let paymentToken = null;
+    let paymentUrl = null;
+
+    const transaction = await snap.createTransaction(midtransParams);
+    paymentToken = transaction.token;
+    paymentUrl = transaction.redirect_url;
+
+    // Update the new Payment Record with Token & URL
+    await db.update(payments)
+      .set({ paymentToken, paymentUrl })
+      .where(eq(payments.id, newPayment.id));
+
+    return { success: true, paymentToken, paymentUrl };
+  } catch (error) {
+    console.error("Failed to generate new payment token:", error);
+    return { success: false, error: "Gagal membuat token pembayaran baru" };
   }
 }

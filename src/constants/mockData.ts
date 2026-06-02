@@ -33,14 +33,14 @@ export const CATEGORIES: Category[] = [
   {
     id: "wedding",
     name: "Wedding Bouquets",
-    image: "/images/categories/wedding.avif",
+    image: "/images/categories/wedding.webp",
     description:
       "Rangkaian bunga elegan dan romantis untuk melengkapi keindahan hari bahagia pernikahan Anda.",
   },
   {
     id: "graduation",
     name: "Graduation",
-    image: "/images/categories/graduation.avif",
+    image: "/images/categories/graduation.webp",
     description:
       "Rayakan pencapaian dan kesuksesan dengan buket cerah yang melambangkan masa depan gemilang.",
   },
@@ -54,7 +54,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "sympathy",
     name: "Sympathy & Condolences",
-    image: "/images/categories/sympathy.avif",
+    image: "/images/categories/sympathy.webp",
     description:
       "Sampaikan rasa peduli dan belasungkawa Anda dengan rangkaian bunga yang damai dan menenangkan.",
   },
@@ -67,7 +67,7 @@ export const PRODUCTS: Product[] = [
     name: "White Elegance Rose",
     price: 750000,
     bestSeller: true,
-    images: ["/images/products/p1_3.webp", "/images/products/p1_2.webp"],
+    images: ["/images/products/p1_3.webp", "/images/products/p1_2.webp", "/images/products/p1_1.webp"],
     description:
       "Rangkaian mawar putih premium yang melambangkan kemurnian cinta, dihiasi dengan baby breath yang elegan.",
     variants: [
@@ -102,13 +102,13 @@ export const PRODUCTS: Product[] = [
             id: "silver",
             name: "Silver Elegance",
             priceModifier: 0,
-            imageUrl: "/images/products/p1_1.webp",
+            imageUrl: "/images/products/p1_2.webp",
           },
           {
             id: "gold",
             name: "Gold Premium",
             priceModifier: 0,
-            imageUrl: "/images/products/p1_1.webp",
+            imageUrl: "/images/products/p1_3.webp",
           },
         ],
       },

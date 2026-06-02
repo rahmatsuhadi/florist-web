@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 import type React from "react";
-import { staggerContainer } from "../../../constants/animations";
-import type { Product } from "../../../constants/mockData";
-import { ProductCard } from "../../molecules/product/ProductCard";
+import { staggerContainer } from "@/constants/animations";
+import type { Product } from "@/services/admin/productService";
+import { ProductCard } from "@/components/molecules/product/ProductCard";
 
 interface ProductListProps {
   products: Product[];

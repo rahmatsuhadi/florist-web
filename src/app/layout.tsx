@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
-import { Lora, Playfair_Display } from "next/font/google";
+import { Lora, Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
-import Toast from "../components/atoms/Toast";
-import CartSidebar from "../components/organisms/cart/CartSidebar";
-import FloatingWidgets from "../components/organisms/chat/FloatingWidgets";
-import Footer from "../components/organisms/layout/Footer";
-import Navbar from "../components/organisms/layout/Navbar";
 import { SHOP_INFO } from "../constants/shopInfo";
-import { AppProvider } from "../store/AppContext";
 
 const lora = Lora({
   subsets: ["latin"],
@@ -19,6 +13,11 @@ const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair-display",
   weight: ["400", "500", "600", "700"],
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -73,20 +72,13 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${lora.variable} ${playfairDisplay.variable} h-full antialiased`}
+      className={`${lora.variable} ${playfairDisplay.variable} ${inter.variable} h-full antialiased`}
     >
       <body
         suppressHydrationWarning
         className="min-h-full flex flex-col font-sans selection:bg-[#E8D9D2] selection:text-[#2C302E]"
       >
-        <AppProvider>
-          <Navbar />
-          <div className="flex-grow">{children}</div>
-          <Footer />
-          <FloatingWidgets />
-          <CartSidebar />
-          <Toast />
-        </AppProvider>
+        {children}
       </body>
     </html>
   );

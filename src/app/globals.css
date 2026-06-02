@@ -8,8 +8,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-playfair: var(--font-playfair-display);
+  --font-serif: var(--font-playfair-display);
   --font-sans: var(--font-lora);
+  --font-inter: var(--font-inter);
 }
 
 body {

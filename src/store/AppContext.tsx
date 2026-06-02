@@ -3,6 +3,13 @@
 import type React from "react";
 import { createContext, useContext, useReducer, useState } from "react";
 
+export interface VariantDetail {
+  name: string;
+  groupName: string;
+  price: number;
+  priceType?: string;
+}
+
 export interface CartItem {
   id: string;
   cartItemId: string;
@@ -11,6 +18,9 @@ export interface CartItem {
   image: string;
   qty: number;
   variantsText: string | null;
+  category?: string;
+  variantDetails?: VariantDetail[];
+  notes?: string;
 }
 
 export interface CartState {

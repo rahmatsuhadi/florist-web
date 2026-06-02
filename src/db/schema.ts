@@ -48,3 +48,18 @@ export const orderItems = pgTable("order_items", {
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const payments = pgTable("payments", {
+  id: serial("id").primaryKey(),
+  orderId: integer("order_id")
+    .notNull()
+    .references(() => orders.id, { onDelete: "cascade" }),
+  midtransTransactionId: varchar("midtrans_transaction_id", { length: 255 }),
+  paymentToken: varchar("payment_token", { length: 255 }),
+  paymentUrl: varchar("payment_url", { length: 255 }),
+  paymentMethod: varchar("payment_method", { length: 100 }),
+  amount: varchar("amount", { length: 255 }).notNull(),
+  status: varchar("status", { length: 50 }).notNull().default("pending"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});

@@ -1,0 +1,39 @@
+import { OrderDetails } from "@/components/organisms/admin/order/OrderDetails";
+import { Metadata } from "next";
+import { getOrderById } from "@/services/admin/orderService";
+import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Detail Pesanan | Admin",
+  description: "Rincian pesanan dari pelanggan",
+};
+
+export const dynamic = "force-dynamic";
+
+interface PageProps {
+  params: { id: string };
+}
+
+export default async function AdminOrderDetailsPage({ params }: PageProps) {
+  const { id } = await params;
+  const orderId = Number(id);
+  
+  if (isNaN(orderId)) {
+    return <div className="p-8 text-center">ID Pesanan tidak valid</div>;
+  }
+
+  const order = await getOrderById(orderId);
+  
+  if (!order) {
+    return (
+      <div className="pt-20 text-center">
+        <h2 className="text-xl font-bold">Pesanan Tidak Ditemukan</h2>
+        <Link href="/admin/orders" className="mt-4 inline-block text-[#4A5D4E] underline">
+          Kembali ke Daftar Pesanan
+        </Link>
+      </div>
+    );
+  }
+
+  return <OrderDetails initialOrder={order} />;
+}

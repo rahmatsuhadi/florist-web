@@ -12,17 +12,31 @@ import { Button } from "../../atoms/Button";
 import { Input } from "../../atoms/Input";
 
 export const CartSidebar: React.FC = () => {
-  const { isCartOpen, setIsCartOpen, cart, cartTotal, dispatch } =
+  const { isCartOpen, setIsCartOpen, cart, cartTotal, dispatch, setToast } =
     useAppContext();
   const [checkoutData, setCheckoutData] = useState({
     name: "",
     phone: "",
     address: "",
   });
+  const [errors, setErrors] = useState({
+    name: "",
+    phone: "",
+    address: "",
+  });
 
   const handleCheckout = () => {
-    if (!checkoutData.name || !checkoutData.phone || !checkoutData.address) {
-      alert("Mohon lengkapi data pengiriman.");
+    const newErrors = {
+      name: checkoutData.name.trim() ? "" : "Nama lengkap wajib diisi.",
+      phone: checkoutData.phone.trim() ? "" : "Nomor WhatsApp wajib diisi.",
+      address: checkoutData.address.trim() ? "" : "Alamat pengiriman wajib diisi.",
+    };
+
+    setErrors(newErrors);
+
+    if (newErrors.name || newErrors.phone || newErrors.address) {
+      setToast({ message: "Mohon lengkapi data pengiriman." });
+      setTimeout(() => setToast(null), 3000);
       return;
     }
 
@@ -187,25 +201,29 @@ export const CartSidebar: React.FC = () => {
                     <Input
                       label="Nama Lengkap"
                       value={checkoutData.name}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         setCheckoutData({
                           ...checkoutData,
                           name: e.target.value,
-                        })
-                      }
-                      placeholder="Jane Doe"
+                        });
+                        if (errors.name) setErrors({ ...errors, name: "" });
+                      }}
+                      placeholder="Ulla..."
+                      error={errors.name}
                     />
                     <Input
                       label="Nomor WhatsApp"
                       value={checkoutData.phone}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         setCheckoutData({
                           ...checkoutData,
                           phone: e.target.value,
-                        })
-                      }
+                        });
+                        if (errors.phone) setErrors({ ...errors, phone: "" });
+                      }}
                       placeholder="0812..."
                       type="tel"
+                      error={errors.phone}
                     />
                     <div className="mb-4">
                       <label
@@ -216,17 +234,24 @@ export const CartSidebar: React.FC = () => {
                       </label>
                       <textarea
                         id="address-textarea"
-                        className="w-full border-b border-[#E8D9D2] bg-transparent py-2 px-1 focus:outline-none focus:border-[#829E8D] transition-colors font-sans text-[#2C302E] resize-none"
+                        className={`w-full border-b border-[#E8D9D2] bg-transparent py-2 px-1 focus:outline-none focus:border-[#829E8D] transition-colors font-sans text-[#2C302E] resize-none ${errors.address ? "border-red-400 focus:border-red-400" : ""
+                          }`}
                         rows={3}
                         placeholder="Jl. Mawar No. 1..."
                         value={checkoutData.address}
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setCheckoutData({
                             ...checkoutData,
                             address: e.target.value,
-                          })
-                        }
+                          });
+                          if (errors.address) setErrors({ ...errors, address: "" });
+                        }}
                       />
+                      {errors.address && (
+                        <span className="block font-sans text-xs text-red-500 mt-1">
+                          {errors.address}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

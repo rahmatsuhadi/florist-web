@@ -2,6 +2,7 @@
 
 import { MapPin, Phone } from "lucide-react";
 import Link from "next/link";
+import { Logo } from "../../atoms/Logo";
 import type React from "react";
 import { SHOP_INFO } from "../../../constants/shopInfo";
 
@@ -10,7 +11,12 @@ export const Footer: React.FC = () => {
     <footer className="bg-[#2C302E] text-[#FAFAF7] pt-16 pb-8 border-t border-opacity-20 mt-20">
       <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
         <div>
-          <h2 className="font-playfair text-3xl mb-6">{SHOP_INFO.name}.</h2>
+          <Logo
+            layout="vertical"
+            className="mb-6"
+            iconClassName="text-[#829E8D]"
+            textClassName="text-white"
+          />
           <p className="font-sans text-sm text-gray-400 max-w-sm">
             Menghadirkan keindahan alam ke dalam momen berharga Anda dengan
             rangkaian bunga segar premium.

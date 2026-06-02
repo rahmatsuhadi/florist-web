@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <!-- Circular soft cream background to contrast beautifully on dark/light tabs -->
+  <circle cx="50" cy="50" r="48" fill="#FAFAF7" stroke="#E8D9D2" stroke-width="2" />
+  
+  <!-- Flower Emblem with 8 sweeping petals -->
+  <g stroke="#829E8D" fill="none">
+    <path d="M 50 20 C 65 16, 76 30, 70 46 C 66 54, 55 50, 50 50" transform="rotate(0, 50, 50)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 50 20 C 65 16, 76 30, 70 46 C 66 54, 55 50, 50 50" transform="rotate(45, 50, 50)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 50 20 C 65 16, 76 30, 70 46 C 66 54, 55 50, 50 50" transform="rotate(90, 50, 50)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 50 20 C 65 16, 76 30, 70 46 C 66 54, 55 50, 50 50" transform="rotate(135, 50, 50)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 50 20 C 65 16, 76 30, 70 46 C 66 54, 55 50, 50 50" transform="rotate(180, 50, 50)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 50 20 C 65 16, 76 30, 70 46 C 66 54, 55 50, 50 50" transform="rotate(225, 50, 50)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 50 20 C 65 16, 76 30, 70 46 C 66 54, 55 50, 50 50" transform="rotate(270, 50, 50)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 50 20 C 65 16, 76 30, 70 46 C 66 54, 55 50, 50 50" transform="rotate(315, 50, 50)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+  
+  <!-- Intertwined cursive monogram 'LF' -->
+  <g stroke="#2C302E" fill="none">
+    <!-- Cursive L -->
+    <path d="M 40 38 C 38 34, 42 30, 45 34 C 48 38, 43 48, 41 53 C 39 58, 35 62, 38 64 C 41 66, 48 62, 53 58" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    <!-- Cursive F -->
+    <path d="M 43 44 C 47 44, 54 44, 58 40 C 61 37, 58 32, 53 32 C 48 32, 45 37, 47 43 C 49 49, 53 58, 51 63 C 49 68, 45 68, 44 65" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    <!-- Crossbar of F -->
+    <path d="M 46 49 C 50 49, 54 48, 57 47" stroke-width="2.5" stroke-linecap="round" />
+  </g>
+</svg>

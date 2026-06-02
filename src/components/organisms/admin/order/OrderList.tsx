@@ -11,8 +11,14 @@ export const OrderList = ({ initialOrders }: { initialOrders: OrderWithItems[] }
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("Semua Status");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const statuses = ["Semua Status", "Menunggu Pembayaran", "Sudah Dibayar", "Sedang Diproses", "Sedang Dikirim", "Selesai", "Dibatalkan"];
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter]);
 
   const filteredTransactions = initialOrders.filter(trx => {
     const matchStatus = statusFilter === "Semua Status" || trx.status === statusFilter;
@@ -20,6 +26,12 @@ export const OrderList = ({ initialOrders }: { initialOrders: OrderWithItems[] }
     const matchSearch = searchString.includes(searchQuery.toLowerCase());
     return matchStatus && matchSearch;
   });
+
+  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+  const currentTransactions = filteredTransactions.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -87,7 +99,7 @@ export const OrderList = ({ initialOrders }: { initialOrders: OrderWithItems[] }
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {filteredTransactions.length === 0 ? (
+              {currentTransactions.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="text-center py-16 text-gray-400">
                     <FileText size={40} className="mx-auto text-gray-200 mb-2" />
@@ -95,7 +107,7 @@ export const OrderList = ({ initialOrders }: { initialOrders: OrderWithItems[] }
                   </td>
                 </tr>
               ) : (
-                filteredTransactions.map((trx) => (
+                currentTransactions.map((trx) => (
                   <tr key={trx.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4.5 font-bold text-[#4A5D4E]">{trx.id}</td>
                     <td className="px-6 py-4.5">
@@ -152,6 +164,73 @@ export const OrderList = ({ initialOrders }: { initialOrders: OrderWithItems[] }
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {filteredTransactions.length > 0 && (
+          <div className="p-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 font-sans bg-gray-50/50">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500">Tampilkan</span>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => {
+                  setItemsPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="border border-gray-200 rounded-lg text-sm px-2 py-1 outline-none focus:border-[#4A5D4E]"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+              <span className="text-sm text-gray-500">
+                dari {filteredTransactions.length} pesanan
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors bg-white shadow-sm"
+              >
+                Kembali
+              </button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                  // Only show 5 pages around current page for large datasets
+                  if (page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)) {
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition-colors shadow-sm ${
+                          currentPage === page
+                            ? "bg-[#4A5D4E] text-white font-medium border border-[#4A5D4E]"
+                            : "text-gray-600 hover:bg-gray-100 bg-white border border-gray-200"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  } else if (page === currentPage - 2 || page === currentPage + 2) {
+                    return <span key={page} className="text-gray-400">...</span>;
+                  }
+                  return null;
+                })}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages || totalPages === 0}
+                className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors bg-white shadow-sm"
+              >
+                Lanjut
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

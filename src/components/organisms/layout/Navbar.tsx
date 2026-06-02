@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, ShoppingBag } from "lucide-react";
+import { Menu, ShoppingBag, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "../../atoms/Logo";
@@ -27,46 +27,63 @@ export const Navbar: React.FC = () => {
 
   return (
     <header
-      className={`fixed w-full top-0 z-40 transition-all duration-300 ${showScrolledStyle
+      className={`fixed w-full top-0 z-40 transition-all duration-300 ${
+        showScrolledStyle
           ? "bg-white/95 backdrop-blur-md shadow-sm py-4"
           : "bg-transparent py-6"
-        }`}
+      }`}
     >
       <div className="container mx-auto px-6 flex justify-between items-center">
         <div className="flex items-center gap-4">
           {/* Mobile menu icon (Visual only for MVP) */}
           <Menu
-            className={`md:hidden cursor-pointer transition-colors duration-300 ${showScrolledStyle ? "text-[#2C302E]" : "text-white"
-              }`}
+            className={`md:hidden cursor-pointer transition-colors duration-300 ${
+              showScrolledStyle ? "text-[#2C302E]" : "text-white"
+            }`}
           />
           <nav
-            className={`hidden md:flex gap-8 font-sans text-sm tracking-widest uppercase transition-colors duration-300 ${showScrolledStyle ? "text-[#2C302E]" : "text-white"
-              }`}
+            className={`hidden md:flex gap-8 font-sans text-sm tracking-widest uppercase transition-colors duration-300 ${
+              showScrolledStyle ? "text-[#2C302E]" : "text-white"
+            }`}
           >
             <Link
               href="/"
-              className={`transition-colors ${showScrolledStyle
+              className={`transition-colors ${
+                showScrolledStyle
                   ? "hover:text-[#829E8D]"
                   : "hover:text-[#E8D9D2]"
-                }`}
+              }`}
             >
               Home
             </Link>
             <Link
               href="/collections"
-              className={`transition-colors ${showScrolledStyle
+              className={`transition-colors ${
+                showScrolledStyle
                   ? "hover:text-[#829E8D]"
                   : "hover:text-[#E8D9D2]"
-                }`}
+              }`}
             >
               Collections
+            </Link>
+            <Link
+              href="/track-order"
+              className={`flex items-center gap-1 transition-colors ${
+                showScrolledStyle
+                  ? "hover:text-[#829E8D]"
+                  : "hover:text-[#E8D9D2]"
+              }`}
+            >
+              <Search size={14} /> Lacak Pesanan
             </Link>
           </nav>
         </div>
 
         <Link href="/">
           <Logo
-            iconClassName={showScrolledStyle ? "text-[#829E8D]" : "text-[#E8D9D2]"}
+            iconClassName={
+              showScrolledStyle ? "text-[#829E8D]" : "text-[#E8D9D2]"
+            }
             textClassName={showScrolledStyle ? "text-[#2C302E]" : "text-white"}
           />
         </Link>
@@ -75,10 +92,11 @@ export const Navbar: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsCartOpen(true)}
-            className={`relative transition-colors duration-300 cursor-pointer ${showScrolledStyle
+            className={`relative transition-colors duration-300 cursor-pointer ${
+              showScrolledStyle
                 ? "text-[#2C302E] hover:text-[#829E8D]"
                 : "text-white hover:text-[#E8D9D2]"
-              }`}
+            }`}
             aria-label="Open cart"
           >
             <ShoppingBag size={24} />

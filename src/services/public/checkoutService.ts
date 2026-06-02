@@ -30,7 +30,10 @@ import { payments } from "@/db/schema";
 export async function createOrder(data: CreateOrderData) {
   try {
     // 1. Insert Order
+    const uniqueOrderId = `trx-${Math.random().toString(36).substring(2, 10)}${Date.now().toString(36).substring(4)}`;
+
     const [newOrder] = await db.insert(orders).values({
+      id: uniqueOrderId,
       customerName: data.customerName,
       customerPhone: data.customerPhone,
       customerAddress: data.customerAddress,
@@ -63,7 +66,7 @@ export async function createOrder(data: CreateOrderData) {
     // 4. Request Midtrans Snap Token
     const midtransParams = {
       transaction_details: {
-        order_id: `PAY-${newPayment.id}`,
+        order_id: `${newOrder.id}-PAY${newPayment.id}`,
         gross_amount: Number(data.totalAmount)
       },
       customer_details: {
@@ -118,7 +121,7 @@ export async function getOrdersByPhone(phone: string): Promise<OrderWithItems[]>
     const allItems = await db.select().from(orderItems);
     const relevantItems = allItems.filter(item => orderIds.includes(item.orderId));
 
-    const itemsByOrderId: Record<number, OrderItemType[]> = {};
+    const itemsByOrderId: Record<string, OrderItemType[]> = {};
     for (const item of relevantItems) {
       if (!itemsByOrderId[item.orderId]) {
         itemsByOrderId[item.orderId] = [];
@@ -136,7 +139,7 @@ export async function getOrdersByPhone(phone: string): Promise<OrderWithItems[]>
   }
 }
 
-export async function getPublicOrderById(id: number): Promise<OrderWithItems | null> {
+export async function getPublicOrderById(id: string): Promise<OrderWithItems | null> {
   try {
     const orderResults = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
     if (orderResults.length === 0) return null;
@@ -156,7 +159,7 @@ export async function getPublicOrderById(id: number): Promise<OrderWithItems | n
   }
 }
 
-export async function generateNewPaymentToken(orderId: number) {
+export async function generateNewPaymentToken(orderId: string) {
   try {
     const orderResults = await db.select().from(orders).where(eq(orders.id, orderId)).limit(1);
     if (orderResults.length === 0) return { success: false, error: "Pesanan tidak ditemukan" };
@@ -171,7 +174,7 @@ export async function generateNewPaymentToken(orderId: number) {
 
     const midtransParams = {
       transaction_details: {
-        order_id: `PAY-${newPayment.id}`,
+        order_id: `${order.id}-PAY${newPayment.id}`,
         gross_amount: Number(order.totalAmount)
       },
       customer_details: {

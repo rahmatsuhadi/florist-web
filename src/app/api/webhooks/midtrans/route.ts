@@ -33,11 +33,12 @@ export async function POST(req: Request) {
     const paymentType = authenticData.payment_type;
     const grossAmount = parseFloat(authenticData.gross_amount);
 
-    if (!midtransOrderId.startsWith("PAY-")) {
+    if (!midtransOrderId.includes("-PAY")) {
       return NextResponse.json({ message: "Ignored unrelated order" });
     }
 
-    const paymentId = parseInt(midtransOrderId.replace("PAY-", ""), 10);
+    const parts = midtransOrderId.split("-PAY");
+    const paymentId = parseInt(parts[1], 10);
     if (isNaN(paymentId)) {
       return NextResponse.json({ error: "Invalid payment ID format" }, { status: 400 });
     }

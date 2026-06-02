@@ -16,9 +16,9 @@ interface PageProps {
 
 export default async function AdminOrderDetailsPage({ params }: PageProps) {
   const { id } = await params;
-  const orderId = Number(id);
+  const orderId = id;
   
-  if (isNaN(orderId)) {
+  if (!orderId) {
     return <div className="p-8 text-center">ID Pesanan tidak valid</div>;
   }
 

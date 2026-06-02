@@ -45,7 +45,7 @@ export const OrderList = ({ initialOrders }: { initialOrders: OrderWithItems[] }
     }
   };
 
-  const handleSelectTransaction = (trxId: number) => {
+  const handleSelectTransaction = (trxId: string) => {
     router.push(`/admin/orders/${trxId}`);
   };
 

@@ -21,7 +21,7 @@ export async function getOrders(): Promise<OrderWithItems[]> {
     const allItems = await db.select().from(orderItems);
 
     // Group items by orderId
-    const itemsByOrderId: Record<number, OrderItemType[]> = {};
+    const itemsByOrderId: Record<string, OrderItemType[]> = {};
     for (const item of allItems) {
       if (!itemsByOrderId[item.orderId]) {
         itemsByOrderId[item.orderId] = [];
@@ -39,7 +39,7 @@ export async function getOrders(): Promise<OrderWithItems[]> {
   }
 }
 
-export async function getOrderById(id: number): Promise<OrderWithItems | null> {
+export async function getOrderById(id: string): Promise<OrderWithItems | null> {
   try {
     const orderResults = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
     if (orderResults.length === 0) return null;
@@ -57,7 +57,7 @@ export async function getOrderById(id: number): Promise<OrderWithItems | null> {
   }
 }
 
-export async function updateOrderStatus(id: number, status: string): Promise<boolean> {
+export async function updateOrderStatus(id: string, status: string): Promise<boolean> {
   try {
     await db.update(orders).set({ status }).where(eq(orders.id, id));
     revalidatePath("/admin/orders");

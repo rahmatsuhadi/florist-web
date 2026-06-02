@@ -21,7 +21,7 @@ export const products = pgTable("products", {
 });
 
 export const orders = pgTable("orders", {
-  id: serial("id").primaryKey(),
+  id: varchar("id", { length: 50 }).primaryKey(),
   customerName: varchar("customer_name", { length: 255 }).notNull(),
   customerPhone: varchar("customer_phone", { length: 50 }).notNull(),
   customerAddress: text("customer_address"),
@@ -34,7 +34,7 @@ export const orders = pgTable("orders", {
 
 export const orderItems = pgTable("order_items", {
   id: serial("id").primaryKey(),
-  orderId: integer("order_id")
+  orderId: varchar("order_id", { length: 50 })
     .notNull()
     .references(() => orders.id, { onDelete: "cascade" }),
   // Snapshot data to avoid changes when product price changes in the future
@@ -51,7 +51,7 @@ export const orderItems = pgTable("order_items", {
 
 export const payments = pgTable("payments", {
   id: serial("id").primaryKey(),
-  orderId: integer("order_id")
+  orderId: varchar("order_id", { length: 50 })
     .notNull()
     .references(() => orders.id, { onDelete: "cascade" }),
   midtransTransactionId: varchar("midtrans_transaction_id", { length: 255 }),

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { ProductList } from "../../../components/organisms/product/ProductList";
-import { CATEGORIES, PRODUCTS } from "../../../constants/mockData";
+import { ProductList } from "@/components/organisms/product/ProductList";
+import { CATEGORIES } from "@/constants/mockData";
+import { getProducts } from "@/services/admin/productService";
 
 interface CategoryPageProps {
   params: Promise<{ id: string }>;
@@ -12,7 +13,8 @@ export async function generateMetadata({
   params,
 }: CategoryPageProps): Promise<Metadata> {
   const { id } = await params;
-  const category = CATEGORIES.find((c) => c.id === id);
+  const normalizedId = id.toLowerCase();
+  const category = CATEGORIES.find((c) => c.id === normalizedId);
 
   if (!category) {
     return {
@@ -41,8 +43,10 @@ export async function generateMetadata({
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { id } = await params;
-  const category = CATEGORIES.find((c) => c.id === id);
-  const categoryProducts = PRODUCTS.filter((p) => p.categoryId === id);
+  const normalizedId = id.toLowerCase();
+  const category = CATEGORIES.find((c) => c.id === normalizedId);
+  const allProducts = await getProducts();
+  const categoryProducts = allProducts.filter((p) => p.category?.toLowerCase() === normalizedId);
 
   if (!category) {
     return (

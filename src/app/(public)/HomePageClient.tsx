@@ -4,16 +4,17 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Clock, Heart, MapPin, ShieldCheck, Truck } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Button } from "../components/atoms/Button";
-import { CategoryCard } from "../components/molecules/category/CategoryCard";
-import { ProductCard } from "../components/molecules/product/ProductCard";
-import { fadeInUp, staggerContainer } from "../constants/animations";
-import { CATEGORIES, GALLERY_ITEMS, HERO_BANNERS, PRODUCTS } from "../constants/mockData";
-import { SHOP_INFO } from "../constants/shopInfo";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { fadeInUp, staggerContainer } from "@/constants/animations";
+import { CATEGORIES, GALLERY_ITEMS, HERO_BANNERS } from "@/constants/mockData";
+import { Button } from "@/components/atoms/Button";
+import { SHOP_INFO } from "@/constants/shopInfo";
+import CategoryCard from "@/components/molecules/category/CategoryCard";
+import ProductCard from "@/components/molecules/product/ProductCard";
+import { Product } from "@/services/admin/productService";
 
-const StoreMap = dynamic(() => import("../components/molecules/map/StoreMap"), {
+const StoreMap = dynamic(() => import("@/components/molecules/map/StoreMap"), {
   ssr: false,
   loading: () => (
     <div className="w-full h-full min-h-[200px] flex items-center justify-center bg-gray-100 text-sm font-sans text-[#5A635E] border border-[#E8D9D2]">
@@ -39,8 +40,8 @@ const SectionHeading = ({
   </motion.div>
 );
 
-export default function Home() {
-  const bestSellers = PRODUCTS.filter((p) => p.bestSeller);
+export default function HomePageClient({ initialProducts }: { initialProducts: Product[] }) {
+  const bestSellers = initialProducts.slice(0, 3);
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
   useEffect(() => {

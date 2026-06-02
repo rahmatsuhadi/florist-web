@@ -1,5 +1,5 @@
+import CollectionsPageClient from "@/components/organisms/collections/CollectionsPageClient";
 import type { Metadata } from "next";
-import { CollectionsPageClient } from "../../components/organisms/collections/CollectionsPageClient";
 
 export const metadata: Metadata = {
   title: "Koleksi Bunga Premium",

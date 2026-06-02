@@ -4,32 +4,32 @@ import { cookies } from "next/headers";
 import { encrypt } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 
-// In a real application, you would fetch this from a 'users' table in the database
-// For this MVP, we use hardcoded credentials as requested for simplicity
-const ADMIN_EMAIL = "admin@fleuriste.com";
-// Hashed "admin123"
-const ADMIN_PASSWORD_HASH = "$2b$10$or2l.zj9Ga8/A2dXPhhyOeefSCTYs7yjRPYjatyc/SUc2fmF6DuYi";
+import { db } from "@/db";
+import { users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export const login = async (email: string, password: string) => {
-  if (email !== ADMIN_EMAIL) {
-    return { success: false, error: "Invalid credentials" };
+  const [userRecord] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+
+  if (!userRecord) {
+    return { success: false, error: "Email atau password salah" };
   }
 
-  const isPasswordValid = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
+  const isPasswordValid = await bcrypt.compare(password, userRecord.passwordHash);
 
   if (!isPasswordValid) {
-    return { success: false, error: "Invalid credentials" };
+    return { success: false, error: "Email atau password salah" };
   }
 
   const user = {
-    id: "1",
-    name: "Admin Utama",
-    role: "Superadmin",
-    initial: "A",
+    id: userRecord.id.toString(),
+    name: userRecord.name,
+    role: userRecord.role,
+    initial: userRecord.name.charAt(0).toUpperCase(),
   };
 
   const session = await encrypt({ user, time: new Date().toISOString() });
-  
+
   (await cookies()).set("admin_session", session, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

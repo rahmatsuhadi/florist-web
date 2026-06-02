@@ -6,19 +6,20 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import { fadeInUp } from "../../../constants/animations";
-import type { Product } from "../../../constants/mockData";
+import { Product } from "../../../services/admin/productService";
 import { useAppContext } from "../../../store/AppContext";
 import { formatIdr } from "../../../utils/format";
 import { Button } from "../../atoms/Button";
 
 interface ProductCardProps {
   product: Product;
+  isBestSeller?: boolean;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, isBestSeller }) => {
   const router = useRouter();
   const { addToCart } = useAppContext();
-  const hasVariants = product.variants && product.variants.length > 0;
+  const hasVariants = product.variantGroups && product.variantGroups.length > 0;
 
   const handleAction = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -27,11 +28,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       router.push(`/products/${product.id}`);
     } else {
       addToCart({
-        id: product.id,
-        cartItemId: product.id,
+        id: String(product.id),
+        cartItemId: String(product.id),
         name: product.name,
-        price: product.price,
-        image: product.images[0], // Ambil gambar pertama sebagai default
+        price: Number(product.basePrice),
+        image: product.images[0] || "", // Ambil gambar pertama sebagai default
         variantsText: null,
       });
     }
@@ -69,7 +70,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         )}
 
         {/* Lencana Best Seller agar tetap di atas gambar */}
-        {product.bestSeller && (
+        {isBestSeller && (
           <div className="absolute top-4 left-4 z-20 pointer-events-none">
             <span className="bg-[#E8D9D2] text-[#2C302E] text-xs font-sans px-3 py-1 uppercase tracking-wider shadow-sm">
               Best Seller
@@ -86,8 +87,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </Link>
         <p className="font-sans text-[#5A635E] mb-4">
           {hasVariants
-            ? `Mulai dari ${formatIdr(product.price)}`
-            : formatIdr(product.price)}
+            ? `Mulai dari ${formatIdr(Number(product.basePrice))}`
+            : formatIdr(Number(product.basePrice))}
         </p>
         <div className="mt-auto">
           <Button

@@ -2,13 +2,14 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, MapPin, Package } from "lucide-react";
+import { ChevronLeft, MapPin, Package, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { OrderWithItems } from "@/services/admin/orderService";
 import { formatIdr } from "@/utils/format";
 import { VariantDetail } from "@/store/AppContext";
 import { generateNewPaymentToken } from "@/services/public/checkoutService";
 import { useAppContext } from "@/store/AppContext";
+import { useShopStore } from "@/store/shopStore";
 import Script from "next/script";
 
 declare global {
@@ -23,6 +24,7 @@ const OrderStatusBadge = ({ status }: { status: string }) => {
     "Sudah Dibayar": { color: "bg-blue-100 text-blue-800 border-blue-200", text: "Sudah Dibayar" },
     "Sedang Diproses": { color: "bg-blue-100 text-blue-800 border-blue-200", text: "Sedang Diproses" },
     "Sedang Dikirim": { color: "bg-purple-100 text-purple-800 border-purple-200", text: "Sedang Dikirim" },
+    "Siap Diambil": { color: "bg-teal-100 text-teal-800 border-teal-200", text: "Siap Diambil" },
     "Selesai": { color: "bg-green-100 text-green-800 border-green-200", text: "Selesai" },
     "Dibatalkan": { color: "bg-red-100 text-red-800 border-red-200", text: "Dibatalkan" },
   };
@@ -40,6 +42,28 @@ export const OrderDetailClient = ({ initialOrder }: { initialOrder: OrderWithIte
   const { setToast } = useAppContext();
 
   const [isLoading, setIsLoading] = React.useState(false);
+  const shopStore = useShopStore();
+
+  const getStatusDescription = (status: string) => {
+    switch (status) {
+      case "Menunggu Pembayaran":
+        return "Pesanan Anda telah kami terima. Silakan selesaikan pembayaran agar pesanan dapat segera diproses.";
+      case "Sudah Dibayar":
+        return "Pembayaran telah terverifikasi. Pesanan Anda akan segera diproses oleh tim kami.";
+      case "Sedang Diproses":
+        return "Tim florist kami sedang merangkai pesanan Anda dengan penuh dedikasi.";
+      case "Sedang Dikirim":
+        return "Pesanan Anda sedang dalam perjalanan ke lokasi tujuan oleh kurir kami.";
+      case "Siap Diambil":
+        return "Pesanan sudah siap diambil ke toko fisik kami. Ditunggu kedatangannya ya!";
+      case "Selesai":
+        return "Pesanan telah selesai. Terima kasih telah berbelanja bersama kami!";
+      case "Dibatalkan":
+        return "Pesanan telah dibatalkan. Jika ada pertanyaan, hubungi kami via WhatsApp.";
+      default:
+        return "Menunggu konfirmasi lebih lanjut.";
+    }
+  };
 
   // Midtrans Payment Logic
   const latestPayment = order.payments?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
@@ -127,12 +151,48 @@ export const OrderDetailClient = ({ initialOrder }: { initialOrder: OrderWithIte
               </div>
             </div>
 
+            <div className="bg-[#FAFAF7] border border-[#E8D9D2] p-5 rounded-md mb-8">
+               <h4 className="font-playfair text-[#2C302E] font-bold flex items-center gap-2 mb-2 text-lg">
+                 <Info size={18} className="text-brand" /> Status Pesanan Saat Ini
+               </h4>
+               <p className="font-sans text-sm text-[#5A635E] leading-relaxed">
+                 {getStatusDescription(order.status)}
+               </p>
+               {order.status === "Siap Diambil" && shopStore.latitude && shopStore.longitude && (
+                 <a 
+                   href={`https://www.google.com/maps?q=${shopStore.latitude},${shopStore.longitude}`} 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   className="mt-3 inline-flex items-center gap-2 text-brand hover:text-[#3A4A3E] transition-colors font-sans text-sm font-semibold border border-brand/20 bg-brand/5 px-4 py-2 rounded-lg"
+                 >
+                   <MapPin size={16} /> Buka Google Maps Toko
+                 </a>
+               )}
+            </div>
+
             <div className="mb-8">
-              <h3 className="font-playfair text-lg text-[#2C302E] mb-3 flex items-center gap-2"><MapPin size={18} /> Detail Pengiriman</h3>
+              <h3 className="font-playfair text-lg text-[#2C302E] mb-3 flex items-center gap-2">
+                {/* @ts-ignore */}
+                {order.deliveryMethod === "pickup" ? (
+                  <><Package size={18} /> Metode Pengambilan</>
+                ) : (
+                  <><MapPin size={18} /> Detail Pengiriman</>
+                )}
+              </h3>
               <div className="bg-[#FAFAF7] p-4 rounded-sm font-sans text-sm text-[#5A635E]">
                 <p className="font-semibold text-[#2C302E] text-base mb-1">{order.customerName}</p>
                 <p className="mb-2">{order.customerPhone}</p>
-                <p className="leading-relaxed">{order.customerAddress}</p>
+                
+                {/* @ts-ignore */}
+                {order.deliveryMethod === "pickup" ? (
+                  <div className="mt-2 p-3 bg-amber-50 border border-amber-100 rounded text-amber-800">
+                    <p className="font-medium">Ambil Sendiri (Pick Up)</p>
+                    <p className="text-xs mt-1">Silakan ambil pesanan Anda di toko fisik kami ketika status sudah "Siap Diambil".</p>
+                  </div>
+                ) : (
+                  <p className="leading-relaxed">{order.customerAddress}</p>
+                )}
+
                 {order.customerNotes && (
                   <div className="mt-4 pt-4 border-t border-[#E8D9D2]">
                     <p className="font-semibold text-[#2C302E] mb-1">Catatan Tambahan:</p>

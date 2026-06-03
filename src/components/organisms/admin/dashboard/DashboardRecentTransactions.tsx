@@ -13,24 +13,14 @@ import {
   TableCell
 } from "@/components/molecules/admin/table/Table";
 
+import { getStatusStyle, isUrgentOrder } from "@/utils/orderUtils";
+
 interface DashboardRecentTransactionsProps {
   transactions: Transaction[];
 }
 
 export const DashboardRecentTransactions: React.FC<DashboardRecentTransactionsProps> = ({ transactions }) => {
   const router = useRouter();
-
-  const getStatusStyle = (status: string) => {
-    switch (status) {
-      case "Menunggu Pembayaran": return "bg-yellow-100 text-yellow-700";
-      case "Sudah Dibayar": return "bg-blue-100 text-blue-700";
-      case "Sedang Diproses": return "bg-indigo-100 text-indigo-700";
-      case "Sedang Dikirim": return "bg-purple-100 text-purple-700";
-      case "Selesai": return "bg-green-100 text-green-700";
-      case "Dibatalkan": return "bg-red-100 text-red-700";
-      default: return "bg-gray-100 text-gray-700";
-    }
-  };
 
   return (
     <div className="lg:col-span-2 space-y-4">
@@ -49,11 +39,20 @@ export const DashboardRecentTransactions: React.FC<DashboardRecentTransactionsPr
             <TableHead className="text-right">Aksi</TableHead>
           </TableHeader>
           <TableBody>
-            {transactions.slice(0, 4).map((trx, i) => (
-              <TableRow key={i}>
+            {transactions.slice(0, 4).map((trx, i) => {
+              const isUrgent = isUrgentOrder(trx);
+              return (
+              <TableRow key={i} className={isUrgent ? "bg-red-50/40 relative" : ""}>
                 <TableCell>
-                  <p className="font-semibold text-gray-900">{trx.name}</p>
-                  <p className="text-xs text-gray-400">{trx.phone}</p>
+                  <div className="flex flex-col items-start gap-1">
+                    <p className="font-semibold text-gray-900">{trx.name}</p>
+                    {isUrgent && (
+                      <span className="bg-red-600 text-white text-[9px] px-1.5 py-0.5 rounded-sm font-bold tracking-wider animate-pulse uppercase">
+                        Urgent
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-400 mt-0.5">{trx.phone}</p>
                 </TableCell>
                 <TableCell className="text-gray-600 font-medium">{trx.product}</TableCell>
                 <TableCell className="font-semibold text-gray-900">{formatIdr(Number(trx.total))}</TableCell>
@@ -71,7 +70,8 @@ export const DashboardRecentTransactions: React.FC<DashboardRecentTransactionsPr
                   </button>
                 </TableCell>
               </TableRow>
-            ))}
+              );
+            })}
             {transactions.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-8 text-gray-500">

@@ -3,12 +3,13 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { ChevronLeft, Sparkles, MapPin, MessageCircle, Check, Send, FileText, Smartphone, Loader2, Calendar } from "lucide-react";
+import { ChevronLeft, Sparkles, MapPin, MessageCircle, Check, Send, FileText, Smartphone, Loader2, Calendar, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { formatIdr } from "@/utils/format";
 import { OrderWithItems, updateOrderStatus } from "@/services/admin/orderService";
 import { VariantDetail } from "@/store/AppContext";
 import dynamic from "next/dynamic";
+import { getStatusStyle, isUrgentOrder } from "@/utils/orderUtils";
 
 const LocationPicker = dynamic(() => import("@/components/molecules/LocationPicker"), { ssr: false });
 
@@ -107,6 +108,33 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
+          
+          {isUrgentOrder(transaction) && (
+            <div className="bg-red-50 border border-red-200 text-red-800 p-5 rounded-2xl flex items-start gap-3 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
+              <AlertCircle className="shrink-0 mt-0.5 text-red-600" size={20} />
+              <div>
+                <h3 className="font-bold text-red-900 mb-1.5 flex items-center gap-2">
+                  Pesanan Mendesak (URGENT)
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                  </span>
+                </h3>
+                <p className="text-sm leading-relaxed text-red-700/90">
+                  Pesanan ini membutuhkan perhatian segera. Status saat ini adalah <span className="font-semibold bg-red-100 px-1.5 py-0.5 rounded text-red-800">"{transaction.status}"</span> 
+                  dan jadwal {transaction.deliveryMethod === 'pickup' ? 'pengambilan' : 'pengiriman'} telah ditetapkan pada:
+                  <br/>
+                  <span className="font-semibold inline-block mt-2 bg-red-100/50 px-2 py-1 rounded border border-red-200/50">
+                    {/* @ts-ignore */}
+                    {new Date(transaction.scheduledDate!).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} Pukul {transaction.scheduledTime}
+                  </span>
+                  <br/>
+                  <span className="block mt-2">Ini berarti tenggat waktu adalah <strong>hari ini atau telah lewat</strong>. Mohon segera proses dan perbarui status pesanan ini.</span>
+                </p>
+              </div>
+            </div>
+          )}
+
           <div className="bg-white p-6 rounded-2xl border border-brand/10 shadow-sm space-y-6">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="font-serif text-lg font-semibold text-gray-900">Detail Produk & Kustomisasi</h3>

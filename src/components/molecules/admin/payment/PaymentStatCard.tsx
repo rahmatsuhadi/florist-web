@@ -15,7 +15,7 @@ export const PaymentStatCard = ({ title, value, icon: Icon, colorClass }: Paymen
   };
 
   return (
-    <div className="bg-white p-5 rounded-2xl border border-[#4A5D4E]/10 shadow-sm flex items-center gap-4">
+    <div className="bg-white p-5 rounded-2xl border border-brand/10 shadow-sm flex items-center gap-4">
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colorMap[colorClass]}`}>
         <Icon size={20} />
       </div>

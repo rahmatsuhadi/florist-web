@@ -62,7 +62,7 @@ export const DashboardOverview = () => {
   if (isLoading || !metrics) {
     return (
       <div className="flex items-center justify-center h-[60vh]">
-        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} className="w-8 h-8 border-4 border-[#4A5D4E]/30 border-t-[#4A5D4E] rounded-full" />
+        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} className="w-8 h-8 border-4 border-brand/30 border-t-brand rounded-full" />
       </div>
     );
   }
@@ -74,7 +74,7 @@ export const DashboardOverview = () => {
       exit={{ opacity: 0 }}
       className="space-y-8"
     >
-      <div className="bg-[#4A5D4E] p-8 rounded-3xl text-white relative overflow-hidden shadow-lg">
+      <div className="bg-brand p-8 rounded-3xl text-white relative overflow-hidden shadow-lg">
         <div className="absolute right-0 bottom-0 top-0 w-1/3 opacity-10 flex items-center justify-center">
           <Sparkles size={200} />
         </div>
@@ -86,7 +86,7 @@ export const DashboardOverview = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-[#4A5D4E]/10 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
+        <div className="bg-white p-6 rounded-2xl border border-brand/10 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
           <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
             <ShoppingBag size={24} />
           </div>
@@ -96,7 +96,7 @@ export const DashboardOverview = () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-[#4A5D4E]/10 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
+        <div className="bg-white p-6 rounded-2xl border border-brand/10 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
           <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
             <Clock size={24} />
           </div>
@@ -106,7 +106,7 @@ export const DashboardOverview = () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-[#4A5D4E]/10 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
+        <div className="bg-white p-6 rounded-2xl border border-brand/10 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
           <div className="w-12 h-12 bg-sky-50 rounded-xl flex items-center justify-center text-sky-600">
             <Send size={24} />
           </div>
@@ -116,7 +116,7 @@ export const DashboardOverview = () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-[#4A5D4E]/10 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
+        <div className="bg-white p-6 rounded-2xl border border-brand/10 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
           <div className="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center text-[#B88B8C]">
             <TrendingUp size={24} />
           </div>
@@ -128,10 +128,10 @@ export const DashboardOverview = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-[#4A5D4E]/10 shadow-sm space-y-4 hover:shadow-md transition-shadow">
+        <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-brand/10 shadow-sm space-y-4 hover:shadow-md transition-shadow">
           <div className="flex justify-between items-center border-b pb-3">
             <h3 className="font-serif text-lg font-semibold text-gray-900">Transaksi WhatsApp Terbaru</h3>
-            <button onClick={() => router.push('/admin/orders')} className="text-xs font-bold text-[#4A5D4E] hover:underline">Semua Transaksi →</button>
+            <button onClick={() => router.push('/admin/orders')} className="text-xs font-bold text-brand hover:underline">Semua Transaksi →</button>
           </div>
 
           <div className="overflow-x-auto">
@@ -162,7 +162,7 @@ export const DashboardOverview = () => {
                     <td className="py-3.5 text-right">
                       <button 
                         onClick={() => router.push('/admin/orders')}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#4A5D4E]/10 hover:bg-[#4A5D4E] hover:text-white text-[#4A5D4E] text-xs font-bold rounded-lg transition-all"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-brand/10 hover:bg-brand hover:text-white text-brand text-xs font-bold rounded-lg transition-all"
                       >
                         Detail <ChevronRight size={12} />
                       </button>
@@ -174,15 +174,15 @@ export const DashboardOverview = () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-[#4A5D4E]/10 shadow-sm space-y-4 hover:shadow-md transition-shadow">
+        <div className="bg-white p-6 rounded-2xl border border-brand/10 shadow-sm space-y-4 hover:shadow-md transition-shadow">
           <h3 className="font-serif text-lg font-semibold text-gray-900 border-b pb-3">Tindakan Cepat</h3>
           <div className="space-y-3">
             <button 
               onClick={() => router.push('/admin/products/new')}
-              className="w-full flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-[#4A5D4E]/30 hover:bg-[#4A5D4E]/5 transition-all text-left group"
+              className="w-full flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-brand/30 hover:bg-brand/5 transition-all text-left group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#4A5D4E]/10 rounded-lg flex items-center justify-center text-[#4A5D4E] group-hover:bg-[#4A5D4E] group-hover:text-white transition-colors">
+                <div className="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-colors">
                   <Plus size={20} />
                 </div>
                 <div>
@@ -194,7 +194,7 @@ export const DashboardOverview = () => {
 
             <button 
               onClick={() => {}}
-              className="w-full flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-[#4A5D4E]/30 hover:bg-[#4A5D4E]/5 transition-all text-left group"
+              className="w-full flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-brand/30 hover:bg-brand/5 transition-all text-left group"
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-rose-50 rounded-lg flex items-center justify-center text-[#B88B8C] group-hover:bg-[#B88B8C] group-hover:text-white transition-colors">

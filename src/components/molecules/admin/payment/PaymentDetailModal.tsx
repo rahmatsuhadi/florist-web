@@ -16,7 +16,7 @@ export const PaymentDetailModal = ({ payment, onClose, onCheckStatus }: PaymentD
       <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-gray-100 flex flex-col transform transition-all">
         
         {/* Elegant Header with Receipt Aesthetics */}
-        <div className="bg-[#4A5D4E] text-white p-6 relative overflow-hidden">
+        <div className="bg-brand text-white p-6 relative overflow-hidden">
           <div className="absolute right-0 top-0 opacity-10">
             <Sparkles size={120} />
           </div>
@@ -53,10 +53,10 @@ export const PaymentDetailModal = ({ payment, onClose, onCheckStatus }: PaymentD
           </div>
 
           {/* Bank Source Detail Container */}
-          <div className="bg-[#FDFBF7] border border-[#4A5D4E]/10 p-4 rounded-xl space-y-2.5 text-xs">
+          <div className="bg-[#FDFBF7] border border-brand/10 p-4 rounded-xl space-y-2.5 text-xs">
             <div className="flex justify-between">
               <span className="text-gray-400">Metode Bayar</span>
-              <span className="font-bold text-[#4A5D4E] uppercase">{payment.paymentMethod?.replace('_', ' ') || '-'}</span>
+              <span className="font-bold text-brand uppercase">{payment.paymentMethod?.replace('_', ' ') || '-'}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Detail / Sumber</span>
@@ -80,20 +80,20 @@ export const PaymentDetailModal = ({ payment, onClose, onCheckStatus }: PaymentD
           {/* Total Settlement Amount */}
           <div className="border-t border-dashed border-gray-200 pt-4 flex justify-between items-center">
             <span className="text-sm font-semibold text-gray-800">Dana Tagihan</span>
-            <span className="text-xl font-bold text-[#4A5D4E]">{formatIdr(Number(payment.amount))}</span>
+            <span className="text-xl font-bold text-brand">{formatIdr(Number(payment.amount))}</span>
           </div>
         </div>
 
-        <div className="bg-[#F5F2EB]/50 p-4 flex justify-end gap-3">
+        <div className="bg-brand-light/50 p-4 flex justify-end gap-3">
           <button 
             onClick={() => onCheckStatus(payment)}
-            className="px-5 py-2 bg-white border border-[#4A5D4E]/20 text-[#4A5D4E] rounded-xl text-xs font-semibold hover:bg-[#4A5D4E]/5 transition-colors flex items-center gap-2"
+            className="px-5 py-2 bg-white border border-brand/20 text-brand rounded-xl text-xs font-semibold hover:bg-brand/5 transition-colors flex items-center gap-2"
           >
             <RefreshCw size={14} /> Cek Ulang Status
           </button>
           <button 
             onClick={onClose}
-            className="px-5 py-2 bg-[#4A5D4E] text-white rounded-xl text-xs font-semibold hover:bg-[#3d4d40] transition-colors"
+            className="px-5 py-2 bg-brand text-white rounded-xl text-xs font-semibold hover:bg-brand-hover transition-colors"
           >
             Selesai Dibaca
           </button>

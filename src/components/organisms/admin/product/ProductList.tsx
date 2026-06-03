@@ -52,7 +52,7 @@ export const ProductList = () => {
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-          className="w-8 h-8 border-4 border-[#4A5D4E]/30 border-t-[#4A5D4E] rounded-full"
+          className="w-8 h-8 border-4 border-brand/30 border-t-brand rounded-full"
         />
       </div>
     );
@@ -85,12 +85,12 @@ export const ProductList = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari produk..."
-              className="pl-10 pr-4 py-2.5 bg-white border border-[#4A5D4E]/20 rounded-xl outline-none focus:border-[#4A5D4E] focus:ring-1 focus:ring-[#4A5D4E] transition-all w-full sm:w-64 shadow-sm"
+              className="pl-10 pr-4 py-2.5 bg-white border border-brand/20 rounded-xl outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all w-full sm:w-64 shadow-sm"
             />
           </div>
           <button
             onClick={handleAdd}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[#4A5D4E] text-white rounded-xl hover:bg-[#3d4d40] transition shadow-sm font-medium whitespace-nowrap"
+            className="flex items-center gap-2 px-4 py-2.5 bg-brand text-white rounded-xl hover:bg-brand-hover transition shadow-sm font-medium whitespace-nowrap"
           >
             <Plus size={18} /> Tambah Baru
           </button>
@@ -105,8 +105,8 @@ export const ProductList = () => {
             onClick={() => setSelectedCategory(category.id)}
             className={`px-5 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
               selectedCategory === category.id
-                ? "bg-[#4A5D4E] text-white shadow-sm"
-                : "bg-white border border-[#4A5D4E]/20 text-gray-600 hover:bg-[#4A5D4E]/5"
+                ? "bg-brand text-white shadow-sm"
+                : "bg-white border border-brand/20 text-gray-600 hover:bg-brand/5"
             }`}
           >
             {category.name}
@@ -116,7 +116,7 @@ export const ProductList = () => {
 
       {/* Grid Produk */}
       {filteredProducts.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-[#4A5D4E]/10 shadow-sm flex flex-col items-center justify-center">
+        <div className="text-center py-16 bg-white rounded-2xl border border-brand/10 shadow-sm flex flex-col items-center justify-center">
           <Package size={48} className="text-gray-300 mb-4" />
           <h3 className="font-serif text-lg font-medium text-gray-900 mb-1">
             Produk tidak ditemukan

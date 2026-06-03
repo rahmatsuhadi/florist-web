@@ -12,8 +12,8 @@ interface PaymentConfirmModalProps {
 export const PaymentConfirmModal = ({ payment, isProcessing, onCancel, onConfirm }: PaymentConfirmModalProps) => {
   return (
     <div className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm">
-      <div className="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl space-y-6 text-center border border-[#4A5D4E]/10">
-        <div className="w-16 h-16 bg-[#F5F2EB] text-[#4A5D4E] rounded-full flex items-center justify-center mx-auto mb-4">
+      <div className="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl space-y-6 text-center border border-brand/10">
+        <div className="w-16 h-16 bg-brand-light text-brand rounded-full flex items-center justify-center mx-auto mb-4">
           <RefreshCw size={32} className={isProcessing ? "animate-spin" : ""} />
         </div>
         <div>
@@ -33,7 +33,7 @@ export const PaymentConfirmModal = ({ payment, isProcessing, onCancel, onConfirm
           <button
             disabled={isProcessing}
             onClick={onConfirm}
-            className="flex-1 py-3 bg-[#4A5D4E] hover:bg-[#3d4d40] text-white rounded-xl font-semibold text-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+            className="flex-1 py-3 bg-brand hover:bg-brand-hover text-white rounded-xl font-semibold text-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isProcessing ? "Mengecek..." : "Ya, Sinkronkan"}
           </button>

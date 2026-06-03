@@ -20,7 +20,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-[#4A5D4E]/10 overflow-hidden shadow-sm hover:shadow-md transition-shadow group flex flex-col">
+    <div className="bg-white rounded-2xl border border-brand/10 overflow-hidden shadow-sm hover:shadow-md transition-shadow group flex flex-col">
       <div className="h-56 overflow-hidden relative bg-gray-50 flex items-center justify-center">
         {product.images && product.images.length > 0 ? (
           <img
@@ -31,7 +31,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         ) : (
           <ImageIcon size={40} className="text-gray-300" />
         )}
-        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-lg text-xs font-semibold text-[#4A5D4E] shadow-sm">
+        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-lg text-xs font-semibold text-brand shadow-sm">
           {product.category}
         </div>
 
@@ -44,7 +44,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         <button
           onClick={() => onEdit(product)}
-          className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm p-2 rounded-lg text-gray-600 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:text-[#4A5D4E]"
+          className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm p-2 rounded-lg text-gray-600 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:text-brand"
           title="Edit Produk"
         >
           <Edit2 size={16} />
@@ -63,7 +63,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-0.5">
               Harga Dasar
             </p>
-            <span className="font-semibold text-[#4A5D4E]">
+            <span className="font-semibold text-brand">
               {formatRupiah(product.basePrice)}
             </span>
           </div>

@@ -40,7 +40,7 @@ export default function EditProductPage() {
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-          className="w-8 h-8 border-4 border-[#4A5D4E]/30 border-t-[#4A5D4E] rounded-full"
+          className="w-8 h-8 border-4 border-brand/30 border-t-brand rounded-full"
         />
       </div>
     );
@@ -48,7 +48,7 @@ export default function EditProductPage() {
 
   if (!product) {
     return (
-      <div className="text-center py-16 bg-white rounded-2xl border border-[#4A5D4E]/10">
+      <div className="text-center py-16 bg-white rounded-2xl border border-brand/10">
         <h3 className="font-serif text-lg font-medium text-gray-900 mb-1">
           Produk tidak ditemukan
         </h3>

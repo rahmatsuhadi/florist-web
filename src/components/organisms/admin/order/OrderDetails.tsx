@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { toast } from "sonner";
 import { ChevronLeft, Sparkles, MapPin, MessageCircle, Check, Send, FileText, Smartphone, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { formatIdr } from "@/utils/format";
@@ -51,7 +53,7 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
       await updateOrderStatus(transaction.id, newStatus);
     } catch (error) {
       console.error(error);
-      alert("Gagal memperbarui status");
+      toast.error("Gagal memperbarui status");
       setStatus(transaction.status); // revert on error
     } finally {
       setIsUpdating(false);
@@ -59,8 +61,13 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
   };
 
   return (
-    <div className="space-y-6 pb-20">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white p-4 rounded-2xl border border-[#4A5D4E]/10 shadow-sm sticky top-0 z-30 gap-4">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      className="space-y-6 pb-20"
+    >
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white p-4 rounded-2xl border border-brand/10 shadow-sm sticky top-0 z-30 gap-4">
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.push("/admin/orders")}
@@ -77,7 +84,7 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
                 ({transaction.id})
               </span>
             </div>
-            <p className="text-sm text-gray-500 font-sans">
+            <p className="text-gray-500">
               Detail pesanan, alamat pengiriman, dan penanganan status.
             </p>
           </div>
@@ -92,7 +99,7 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-[#4A5D4E]/10 shadow-sm space-y-6">
+          <div className="bg-white p-6 rounded-2xl border border-brand/10 shadow-sm space-y-6">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="font-serif text-lg font-semibold text-gray-900">Detail Produk & Kustomisasi</h3>
               <span className="text-xs text-gray-400 font-medium">
@@ -109,11 +116,11 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
                     {item.productImage ? (
                       <img src={item.productImage} alt={item.productName} className="w-full h-full object-cover" />
                     ) : (
-                      <Sparkles size={24} className="text-[#4A5D4E]" />
+                      <Sparkles size={24} className="text-brand" />
                     )}
                   </div>
                   <div className="flex-1 space-y-1">
-                    <span className="text-[10px] bg-[#4A5D4E]/15 text-[#4A5D4E] px-2 py-0.5 rounded-full font-bold uppercase">{item.productCategory || "Umum"}</span>
+                    <span className="text-[10px] bg-brand/15 text-brand px-2 py-0.5 rounded-full font-bold uppercase">{item.productCategory || "Umum"}</span>
                     <h4 className="font-serif font-bold text-lg text-gray-950 mt-1">{item.productName} <span className="text-sm font-medium text-gray-500">(x{item.quantity})</span></h4>
 
                     {item.variantDetails && (item.variantDetails as VariantDetail[]).length > 0 ? (
@@ -122,7 +129,7 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
                         <div className="flex flex-wrap gap-1.5">
                           {(item.variantDetails as VariantDetail[]).map((v, i) => (
                             <span key={i} className="text-xs bg-white border border-gray-200 text-gray-700 px-2.5 py-1 rounded-lg font-medium shadow-sm flex items-center gap-1">
-                              <Check size={12} className="text-[#4A5D4E]" /> {v.groupName || "Variasi"}: {v.name} {v.price > 0 && `(+${formatIdr(v.price)})`}
+                              <Check size={12} className="text-brand" /> {v.groupName || "Variasi"}: {v.name} {v.price > 0 && `(+${formatIdr(v.price)})`}
                             </span>
                           ))}
                         </div>
@@ -133,8 +140,8 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
 
                     {item.notes && (
                       <div className="pt-2">
-                        <p className="text-xs font-semibold text-[#B88B8C] uppercase tracking-wider mb-1">Catatan Khusus:</p>
-                        <p className="text-xs text-gray-600 bg-rose-50/50 p-2.5 rounded-lg border border-rose-100/50 italic font-sans leading-relaxed">
+                        <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider mb-1">Catatan Khusus:</p>
+                        <p className="text-xs text-gray-600 bg-amber-50 p-2.5 rounded-lg border border-amber-100 italic leading-relaxed">
                           "{item.notes}"
                         </p>
                       </div>
@@ -146,26 +153,26 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
 
             <div className="space-y-4 pt-3">
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-[#F5F2EB] text-[#4A5D4E] rounded-lg mt-0.5"><MapPin size={16} /></div>
+                <div className="p-2 bg-brand-light text-brand rounded-lg mt-0.5"><MapPin size={16} /></div>
                 <div>
                   <h5 className="font-semibold text-gray-900 text-sm">Alamat Pengiriman</h5>
                   <p className="text-xs text-gray-500 mt-1 leading-relaxed font-sans">{transaction.customerAddress}</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 border-t pt-4">
-                <div className="p-2 bg-rose-50 text-[#B88B8C] rounded-lg mt-0.5"><FileText size={16} /></div>
+              {/* <div className="flex items-start gap-3 border-t border-gray-100 pt-4">
+                <div className="p-2 bg-amber-50 text-amber-600 rounded-lg mt-0.5"><FileText size={16} /></div>
                 <div>
                   <h5 className="font-semibold text-gray-900 text-sm">Catatan Ucapan Kartu</h5>
-                  <p className="text-xs text-gray-600 mt-1 bg-rose-50/30 p-3 rounded-xl border border-rose-100 font-sans leading-relaxed italic">
+                  <p className="text-xs text-gray-600 mt-1 bg-amber-50/50 p-3 rounded-xl border border-amber-100 leading-relaxed italic">
                     "{transaction.customerNotes || "Tidak ada catatan ucapan."}"
                   </p>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-[#4A5D4E]/10 shadow-sm space-y-5">
+          <div className="bg-white p-6 rounded-2xl border border-brand/10 shadow-sm space-y-5">
             <div className="border-b pb-3">
               <h3 className="font-serif text-lg font-semibold text-gray-900">Alur Tanggapan WhatsApp</h3>
             </div>
@@ -179,7 +186,7 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
                 href={`https://wa.me/${cleanPhone}?text=${getWAMessage()}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#4A5D4E] hover:bg-[#3d4d40] text-white text-xs font-bold rounded-xl transition-all shadow-md shrink-0 w-full sm:w-auto justify-center"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand hover:bg-brand-hover text-white text-xs font-bold rounded-xl transition-all shadow-md shrink-0 w-full sm:w-auto justify-center"
               >
                 <Send size={14} /> Hubungi Pembeli
               </a>
@@ -188,7 +195,7 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
         </div>
 
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-[#4A5D4E]/10 shadow-sm space-y-5">
+          <div className="bg-white p-6 rounded-2xl border border-brand/10 shadow-sm space-y-5">
             <div className="border-b pb-3">
               <h3 className="font-serif text-lg font-semibold text-gray-900">Kelola Status & Pembayaran</h3>
             </div>
@@ -197,7 +204,7 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
               <div>
                 <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
                   Ubah Status Transaksi
-                  {isUpdating && <Loader2 size={12} className="inline animate-spin ml-2 text-[#4A5D4E]" />}
+                  {isUpdating && <Loader2 size={12} className="inline animate-spin ml-2 text-brand" />}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {["Menunggu Pembayaran", "Sudah Dibayar", "Sedang Diproses", "Sedang Dikirim", "Selesai", "Dibatalkan"].map((st) => (
@@ -206,8 +213,8 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
                       onClick={() => handleStatusChange(st)}
                       disabled={isUpdating}
                       className={`py-2 px-3 rounded-xl border font-semibold text-xs transition-all ${status === st
-                          ? 'bg-[#4A5D4E] text-white border-[#4A5D4E]'
-                          : 'border-gray-200 text-gray-500 hover:bg-gray-50'
+                        ? 'bg-brand text-white border-brand'
+                        : 'border-gray-200 text-gray-500 hover:bg-gray-50'
                         } ${isUpdating ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       {st}
@@ -236,13 +243,13 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
 
               <div className="border-t border-dashed pt-3 flex justify-between font-serif font-bold text-gray-900 text-base">
                 <span>Total Tagihan</span>
-                <span className="text-[#4A5D4E] font-sans font-bold">{formatIdr(Number(transaction.totalAmount))}</span>
+                <span className="text-brand font-sans font-bold">{formatIdr(Number(transaction.totalAmount))}</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-[#F5F2EB]/40 p-5 rounded-2xl border border-[#4A5D4E]/10 space-y-3">
-            <h4 className="font-semibold text-xs text-[#4A5D4E] uppercase tracking-wider flex items-center gap-1.5">
+          <div className="bg-brand-light/40 p-5 rounded-2xl border border-brand/10 space-y-3">
+            <h4 className="font-semibold text-xs text-brand uppercase tracking-wider flex items-center gap-1.5">
               <Smartphone size={14} /> Identitas Pelanggan
             </h4>
             <div className="text-xs space-y-1.5 text-gray-600 font-sans">
@@ -252,6 +259,6 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 import { ChevronLeft, Camera, Trash2, Plus, Package, Image as ImageIcon, X, AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Product, ProductVariantGroup, deleteProduct } from "@/services/admin/productService";
@@ -60,8 +61,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
 
       await Promise.all(uploadPromises);
     } catch (error) {
-      console.error("Failed to upload images", error);
-      alert("Gagal mengunggah foto produk.");
+      console.error(error);
+      toast.error("Gagal mengunggah foto produk.");
+    } finally {
       setUploadingFiles([]);
     }
   };
@@ -224,7 +226,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
       router.push("/admin/products");
     } catch (error) {
       console.error("Failed to delete product", error);
-      alert("Gagal menghapus produk");
+      toast.error("Gagal menghapus produk");
     } finally {
       setIsDeleting(false);
       setShowDeleteModal(false);
@@ -239,7 +241,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
       className="space-y-6 pb-20"
     >
       {/* Header Bar */}
-      <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-[#4A5D4E]/10 shadow-sm sticky top-0 z-30">
+      <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-brand/10 shadow-sm sticky top-0 z-30">
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.push("/admin/products")}
@@ -275,7 +277,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
           <button
             onClick={handleSubmit}
             disabled={isSaving}
-            className="px-5 py-2.5 bg-[#4A5D4E] text-white rounded-xl font-medium hover:bg-[#3d4d40] transition disabled:opacity-70 flex items-center gap-2"
+            className="px-5 py-2.5 bg-brand text-white rounded-xl font-medium hover:bg-brand-hover transition disabled:opacity-70 flex items-center gap-2"
           >
             {isSaving ? "Menyimpan..." : "Simpan Produk"}
           </button>
@@ -285,7 +287,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Kolom Kiri: Informasi Dasar */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-[#4A5D4E]/10 shadow-[0_2px_10px_rgba(0,0,0,0.02)] space-y-5">
+          <div className="bg-white p-6 rounded-2xl border border-brand/10 shadow-[0_2px_10px_rgba(0,0,0,0.02)] space-y-5">
             <h2 className="font-serif text-lg font-semibold text-gray-900 border-b pb-3">
               Informasi Dasar
             </h2>
@@ -313,7 +315,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
                     />
 
                     {idx === 0 && (
-                      <div className="absolute top-1.5 left-1.5 bg-[#4A5D4E] text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm">
+                      <div className="absolute top-1.5 left-1.5 bg-brand text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm">
                         UTAMA
                       </div>
                     )}
@@ -344,7 +346,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
                     {/* Animated indeterminate progress bar */}
                     <div className="absolute inset-x-0 bottom-0 h-1.5 bg-gray-100/50 backdrop-blur-sm overflow-hidden">
                       <motion.div
-                        className="h-full bg-[#4A5D4E]"
+                        className="h-full bg-brand"
                         initial={{ width: "0%", x: "-100%" }}
                         animate={{ width: "40%", x: "300%" }}
                         transition={{
@@ -357,13 +359,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
 
                     {/* Centered Spinner */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-[#4A5D4E] border-t-transparent rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-brand border-t-transparent rounded-full animate-spin" />
                     </div>
                   </div>
                 ))}
 
 
-                <label className="aspect-square bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:border-[#4A5D4E]/50 hover:bg-gray-50/80 transition-colors cursor-pointer">
+                <label className="aspect-square bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:border-brand/50 hover:bg-gray-50/80 transition-colors cursor-pointer">
                   <Camera size={20} className="mb-1" />
                   <span className="text-[10px] font-medium text-gray-500">
                     Tambah Foto
@@ -392,7 +394,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#4A5D4E] outline-none bg-gray-50/50"
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand outline-none bg-gray-50/50"
                 placeholder="Contoh: Classic Red Rose"
               />
             </div>
@@ -406,7 +408,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
                 onChange={(e) =>
                   setFormData({ ...formData, category: e.target.value })
                 }
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#4A5D4E] outline-none bg-gray-50/50 appearance-none"
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand outline-none bg-gray-50/50 appearance-none"
               >
                 <option value="">Pilih Kategori</option>
                 {CATEGORIES.map((cat) => (
@@ -427,7 +429,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
                 onChange={(e) =>
                   setFormData({ ...formData, basePrice: e.target.value })
                 }
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#4A5D4E] outline-none bg-gray-50/50"
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand outline-none bg-gray-50/50"
                 placeholder="0"
               />
             </div>
@@ -442,7 +444,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#4A5D4E] outline-none bg-gray-50/50 resize-none"
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand outline-none bg-gray-50/50 resize-none"
                 placeholder="Tuliskan deskripsi produk..."
               ></textarea>
             </div>
@@ -451,7 +453,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
 
         {/* Kolom Kanan: Variasi Sistem */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-[#4A5D4E]/10 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+          <div className="bg-white p-6 rounded-2xl border border-brand/10 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
             <div className="flex justify-between items-center border-b pb-3 mb-5">
               <div>
                 <h2 className="font-serif text-lg font-semibold text-gray-900">
@@ -463,7 +465,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
               </div>
               <button
                 onClick={handleAddVariantGroup}
-                className="flex items-center gap-2 px-4 py-2 bg-[#FDFBF7] border border-[#4A5D4E]/20 text-[#4A5D4E] rounded-xl hover:bg-[#4A5D4E]/5 transition font-medium text-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-[#FDFBF7] border border-brand/20 text-brand rounded-xl hover:bg-brand/5 transition font-medium text-sm"
               >
                 <Plus size={16} /> Tambah Grup Varian
               </button>
@@ -498,7 +500,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
                             handleGroupChange(group.id, "name", e.target.value)
                           }
                           placeholder="Contoh: Ukuran Buket, Warna Kertas, dll"
-                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-[#4A5D4E] outline-none bg-white font-medium"
+                          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-brand outline-none bg-white font-medium"
                         />
                       </div>
                       <button
@@ -556,7 +558,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
 
                               {uploadingOptions[option.id] && (
                                 <div className="absolute inset-0 flex items-center justify-center bg-white/40 backdrop-blur-[1px]">
-                                  <div className="w-4 h-4 border-2 border-[#4A5D4E] border-t-transparent rounded-full animate-spin" />
+                                  <div className="w-4 h-4 border-2 border-brand border-t-transparent rounded-full animate-spin" />
                                 </div>
                               )}
 
@@ -599,7 +601,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
                                 )
                               }
                               placeholder="M, L, Putih, dll"
-                              className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:border-[#4A5D4E] outline-none text-sm"
+                              className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:border-brand outline-none text-sm"
                             />
                           </div>
 
@@ -615,7 +617,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
                                   e.target.value
                                 )
                               }
-                              className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:border-[#4A5D4E] outline-none text-sm appearance-none bg-gray-50"
+                              className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:border-brand outline-none text-sm appearance-none bg-gray-50"
                             >
                               <option value="add">Tambah Harga</option>
                               <option value="replace">Ganti Harga Dasar</option>
@@ -636,7 +638,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
                                 )
                               }
                               placeholder="0"
-                              className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:border-[#4A5D4E] outline-none text-sm"
+                              className="w-full px-3 py-1.5 rounded-md border border-gray-200 focus:border-brand outline-none text-sm"
                             />
                           </div>
 
@@ -658,7 +660,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave })
 
                     <button
                       onClick={() => handleAddOption(group.id)}
-                      className="mt-4 flex items-center gap-1.5 text-sm font-medium text-[#4A5D4E] hover:underline px-2"
+                      className="mt-4 flex items-center gap-1.5 text-sm font-medium text-brand hover:underline px-2"
                     >
                       <Plus size={16} /> Tambah Opsi Varian
                     </button>

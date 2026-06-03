@@ -13,8 +13,6 @@ export default async function AdminPaymentsPage() {
   const payments = await getPaymentHistory();
 
   return (
-    <div className="p-4 md:p-8">
-      <PaymentHistory payments={payments} />
-    </div>
+    <PaymentHistory payments={payments} />
   );
 }

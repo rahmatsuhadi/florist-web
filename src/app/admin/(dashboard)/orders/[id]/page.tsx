@@ -28,7 +28,7 @@ export default async function AdminOrderDetailsPage({ params }: PageProps) {
     return (
       <div className="pt-20 text-center">
         <h2 className="text-xl font-bold">Pesanan Tidak Ditemukan</h2>
-        <Link href="/admin/orders" className="mt-4 inline-block text-[#4A5D4E] underline">
+        <Link href="/admin/orders" className="mt-4 inline-block text-brand underline">
           Kembali ke Daftar Pesanan
         </Link>
       </div>

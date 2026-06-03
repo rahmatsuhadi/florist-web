@@ -99,3 +99,23 @@ export const storeSettings = pgTable("store_settings", {
   longitude: varchar("longitude", { length: 50 }).notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const heroBanners = pgTable("hero_banners", {
+  id: serial("id").primaryKey(),
+  imageUrl: varchar("image_url", { length: 255 }).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  subtitle: text("subtitle").notNull(),
+  position: integer("position").default(0).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const galleryItems = pgTable("gallery_items", {
+  id: serial("id").primaryKey(),
+  imageUrl: varchar("image_url", { length: 255 }).notNull(),
+  gridClass: varchar("grid_class", { length: 100 }).notNull().default("md:col-span-1 md:row-span-1"),
+  altText: varchar("alt_text", { length: 255 }).notNull(),
+  position: integer("position").default(0).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});

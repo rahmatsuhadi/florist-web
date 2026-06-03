@@ -30,6 +30,8 @@ export const orders = pgTable("orders", {
   customerLatitude: varchar("customer_latitude", { length: 255 }),
   customerLongitude: varchar("customer_longitude", { length: 255 }),
   deliveryMethod: varchar("delivery_method", { length: 50 }).notNull().default("delivery"),
+  scheduledDate: varchar("scheduled_date", { length: 50 }),
+  scheduledTime: varchar("scheduled_time", { length: 50 }),
   totalAmount: varchar("total_amount", { length: 255 }).notNull(),
   status: varchar("status", { length: 50 }).notNull().default("Menunggu Pembayaran"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

@@ -85,3 +85,17 @@ export const notifications = pgTable("notifications", {
   link: varchar("link", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const storeSettings = pgTable("store_settings", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  fullName: varchar("full_name", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 50 }).notNull(),
+  phoneWa: varchar("phone_wa", { length: 50 }).notNull(),
+  instagram: varchar("instagram", { length: 255 }).notNull(),
+  address: text("address").notNull(),
+  openingHours: varchar("opening_hours", { length: 255 }).notNull(),
+  latitude: varchar("latitude", { length: 50 }).notNull(),
+  longitude: varchar("longitude", { length: 50 }).notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});

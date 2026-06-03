@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
@@ -12,25 +12,60 @@ import {
   LogOut,
   CreditCard,
   Store,
+  Globe,
+  ChevronDown,
+  MonitorSmartphone,
 } from "lucide-react";
 import { logout } from "@/services/admin/authService";
 
 export const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const [expandedWebsite, setExpandedWebsite] = useState(true);
 
-  const menuItems = [
+  const mainItems = [
     { id: "overview", path: "/admin", label: "Overview", icon: LayoutDashboard },
-    { id: "products", path: "/admin/products", label: "Katalog Produk", icon: Package },
-    { id: "storefront", path: "/admin/storefront", label: "Store Front", icon: Store },
-    { id: "content", path: "/admin/content", label: "Manajemen Konten", icon: ImageIcon },
     { id: "orders", path: "/admin/orders", label: "Transaksi", icon: Receipt },
+    { id: "products", path: "/admin/products", label: "Katalog Produk", icon: Package },
     { id: "payments", path: "/admin/payments", label: "Riwayat Bayar", icon: CreditCard },
+  ];
+
+  const websiteItems = [
+    { id: "storefront", path: "/admin/storefront", label: "Store Front", icon: Store },
+    { id: "seo", path: "/admin/seo", label: "SEO Manager", icon: Globe },
+    { id: "content", path: "/admin/content", label: "Manajemen Konten", icon: ImageIcon },
   ];
 
   const handleLogout = async () => {
     await logout();
     router.push("/admin/login");
+  };
+
+  const renderItem = (item: any, isSubItem = false) => {
+    const Icon = item.icon;
+    const isActive = pathname === item.path;
+    return (
+      <button
+        key={item.id}
+        onClick={() => router.push(item.path)}
+        className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all relative group ${
+          isActive ? "text-brand" : "text-gray-500 hover:text-brand hover:bg-brand/5"
+        } ${isSubItem ? "pl-11 py-2.5 text-sm" : ""}`}
+      >
+        {isActive && (
+          <motion.div
+            layoutId="activeTab"
+            className="absolute inset-0 bg-brand/10 rounded-2xl"
+            initial={false}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          />
+        )}
+        <Icon size={isSubItem ? 18 : 20} className="relative z-10" />
+        <span className={`font-sans relative z-10 ${isSubItem ? "font-medium" : "font-medium"}`}>
+          {item.label}
+        </span>
+      </button>
+    );
   };
 
   return (
@@ -41,34 +76,40 @@ export const Sidebar = () => {
         </h2>
       </div>
 
-      <nav className="flex-1 px-4 space-y-2 mt-4">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.path;
-          return (
-            <button
-              key={item.id}
-              onClick={() => router.push(item.path)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all relative group ${isActive
-                ? "text-brand"
-                : "text-gray-500 hover:text-brand hover:bg-brand/5"
-                }`}
+      <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto hide-scrollbar">
+        {mainItems.map((item) => renderItem(item))}
+
+        <div className="pt-2">
+          <button
+            onClick={() => setExpandedWebsite(!expandedWebsite)}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all text-gray-500 hover:text-brand hover:bg-brand/5"
+          >
+            <div className="flex items-center gap-3">
+              <MonitorSmartphone size={20} />
+              <span className="font-medium font-sans">Website Settings</span>
+            </div>
+            <motion.div
+              animate={{ rotate: expandedWebsite ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
             >
-              {isActive && (
-                <motion.div
-                  layoutId="activeTab"
-                  className="absolute inset-0 bg-brand/10 rounded-2xl"
-                  initial={false}
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-              )}
-              <Icon size={20} className="relative z-10" />
-              <span className="font-medium font-sans relative z-10">
-                {item.label}
-              </span>
-            </button>
-          );
-        })}
+              <ChevronDown size={16} />
+            </motion.div>
+          </button>
+          
+          <AnimatePresence initial={false}>
+            {expandedWebsite && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="overflow-hidden mt-1 space-y-1"
+              >
+                {websiteItems.map((item) => renderItem(item, true))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </nav>
 
       <div className="p-4 border-t border-brand/10">

@@ -122,3 +122,12 @@ export const galleryItems = pgTable("gallery_items", {
   isActive: boolean("is_active").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const seoSettings = pgTable("seo_settings", {
+  id: serial("id").primaryKey(),
+  pageName: varchar("page_name", { length: 100 }).notNull().unique(), // 'home', 'products', 'categories'
+  title: varchar("title", { length: 255 }),
+  description: text("description"),
+  keywords: text("keywords"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});

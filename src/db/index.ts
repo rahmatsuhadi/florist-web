@@ -13,10 +13,7 @@ declare global {
 }
 
 // Disable prefetch as it is not supported for "Transaction" pool mode
-export const client = globalThis.postgresClient || postgres(connectionString, { 
-  prepare: false,
-  max: process.env.NODE_ENV === "production" ? 1 : undefined
-});
+export const client = globalThis.postgresClient || postgres(connectionString, { prepare: false });
 if (process.env.NODE_ENV !== "production") {
   globalThis.postgresClient = client;
 }

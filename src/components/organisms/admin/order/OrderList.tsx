@@ -75,8 +75,8 @@ export const OrderList = ({ initialOrders }: { initialOrders: OrderWithItems[] }
             key={status}
             onClick={() => setStatusFilter(status)}
             className={`px-5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${statusFilter === status
-                ? 'bg-[#4A5D4E] text-white shadow-sm'
-                : 'bg-white border border-[#4A5D4E]/10 text-gray-500 hover:bg-[#4A5D4E]/5'
+              ? 'bg-[#4A5D4E] text-white shadow-sm'
+              : 'bg-white border border-[#4A5D4E]/10 text-gray-500 hover:bg-[#4A5D4E]/5'
               }`}
           >
             {status}
@@ -116,7 +116,7 @@ export const OrderList = ({ initialOrders }: { initialOrders: OrderWithItems[] }
                     </td>
                     <td className="px-6 py-4.5">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gray-100 rounded-md overflow-hidden shrink-0 flex items-center justify-center">
+                        {/* <div className="w-10 h-10 bg-gray-100 rounded-md overflow-hidden shrink-0 flex items-center justify-center">
                           {trx.items.length > 0 && trx.items[0].productImage ? (
                             <img src={trx.items[0].productImage} alt={trx.items[0].productName} className="w-full h-full object-cover" />
                           ) : (
@@ -124,7 +124,7 @@ export const OrderList = ({ initialOrders }: { initialOrders: OrderWithItems[] }
                               {trx.items.length > 0 ? trx.items[0].productName.charAt(0) : "?"}
                             </span>
                           )}
-                        </div>
+                        </div> */}
                         <div>
                           <p className="font-medium text-gray-800">
                             {trx.items.length > 0 ? trx.items[0].productName : "Produk tidak diketahui"}
@@ -205,11 +205,10 @@ export const OrderList = ({ initialOrders }: { initialOrders: OrderWithItems[] }
                       <button
                         key={page}
                         onClick={() => setCurrentPage(page)}
-                        className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition-colors shadow-sm ${
-                          currentPage === page
-                            ? "bg-[#4A5D4E] text-white font-medium border border-[#4A5D4E]"
-                            : "text-gray-600 hover:bg-gray-100 bg-white border border-gray-200"
-                        }`}
+                        className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition-colors shadow-sm ${currentPage === page
+                          ? "bg-[#4A5D4E] text-white font-medium border border-[#4A5D4E]"
+                          : "text-gray-600 hover:bg-gray-100 bg-white border border-gray-200"
+                          }`}
                       >
                         {page}
                       </button>

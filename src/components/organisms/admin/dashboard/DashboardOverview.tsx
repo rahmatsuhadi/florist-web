@@ -3,28 +3,28 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { 
-  Sparkles, 
-  ShoppingBag, 
-  Clock, 
-  Send, 
-  TrendingUp, 
-  ChevronRight, 
-  Plus, 
-  Globe 
+import {
+  Sparkles,
+  ShoppingBag,
+  Clock,
+  Send,
+  TrendingUp,
+  ChevronRight,
+  Plus,
+  Globe
 } from "lucide-react";
 import { formatIdr } from "@/utils/format";
 
-import { 
-  getDashboardStats, 
-  getRecentTransactions, 
-  DashboardMetrics, 
-  Transaction 
+import {
+  getDashboardStats,
+  getRecentTransactions,
+  DashboardMetrics,
+  Transaction
 } from "@/services/admin/dashboardService";
 
 export const DashboardOverview = () => {
   const router = useRouter();
-  
+
   const [metrics, setMetrics] = React.useState<DashboardMetrics | null>(null);
   const [transactions, setTransactions] = React.useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -130,7 +130,7 @@ export const DashboardOverview = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-brand/10 shadow-sm space-y-4 hover:shadow-md transition-shadow">
           <div className="flex justify-between items-center border-b pb-3">
-            <h3 className="font-serif text-lg font-semibold text-gray-900">Transaksi WhatsApp Terbaru</h3>
+            <h3 className="font-serif text-lg font-semibold text-gray-900">Transaksi Terbaru</h3>
             <button onClick={() => router.push('/admin/orders')} className="text-xs font-bold text-brand hover:underline">Semua Transaksi →</button>
           </div>
 
@@ -146,8 +146,8 @@ export const DashboardOverview = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {transactions.slice(0, 4).map((trx) => (
-                  <tr key={trx.id} className="hover:bg-gray-50/50 transition-colors">
+                {transactions.slice(0, 4).map((trx, i) => (
+                  <tr key={i} className="hover:bg-gray-50/50 transition-colors">
                     <td className="py-3.5">
                       <p className="font-semibold text-gray-900">{trx.name}</p>
                       <p className="text-xs text-gray-400">{trx.phone}</p>
@@ -160,7 +160,7 @@ export const DashboardOverview = () => {
                       </span>
                     </td>
                     <td className="py-3.5 text-right">
-                      <button 
+                      <button
                         onClick={() => router.push('/admin/orders')}
                         className="inline-flex items-center gap-1 px-3 py-1.5 bg-brand/10 hover:bg-brand hover:text-white text-brand text-xs font-bold rounded-lg transition-all"
                       >
@@ -177,7 +177,7 @@ export const DashboardOverview = () => {
         <div className="bg-white p-6 rounded-2xl border border-brand/10 shadow-sm space-y-4 hover:shadow-md transition-shadow">
           <h3 className="font-serif text-lg font-semibold text-gray-900 border-b pb-3">Tindakan Cepat</h3>
           <div className="space-y-3">
-            <button 
+            <button
               onClick={() => router.push('/admin/products/new')}
               className="w-full flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-brand/30 hover:bg-brand/5 transition-all text-left group"
             >
@@ -192,8 +192,8 @@ export const DashboardOverview = () => {
               </div>
             </button>
 
-            <button 
-              onClick={() => {}}
+            <button
+              onClick={() => { }}
               className="w-full flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-brand/30 hover:bg-brand/5 transition-all text-left group"
             >
               <div className="flex items-center gap-3">

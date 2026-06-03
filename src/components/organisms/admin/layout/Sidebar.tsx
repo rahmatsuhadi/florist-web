@@ -22,7 +22,7 @@ export const Sidebar = () => {
     { id: "overview", path: "/admin", label: "Overview", icon: LayoutDashboard },
     { id: "products", path: "/admin/products", label: "Katalog Produk", icon: Package },
     // { id: "storefront", path: "/admin/storefront", label: "Store Front", icon: ImageIcon },
-    { id: "orders", path: "/admin/orders", label: "Transaksi WA", icon: Receipt },
+    { id: "orders", path: "/admin/orders", label: "Transaksi", icon: Receipt },
     { id: "payments", path: "/admin/payments", label: "Riwayat Bayar", icon: CreditCard },
     // { id: "settings", path: "/admin/settings", label: "Pengaturan", icon: Settings },
   ];

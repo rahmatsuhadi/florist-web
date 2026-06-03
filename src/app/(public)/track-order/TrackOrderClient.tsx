@@ -83,7 +83,7 @@ export const TrackOrderClient = () => {
                 <div key={order.id} onClick={() => router.push(`/orders/${order.id}`)} className="bg-white border border-[#E8D9D2] p-6 hover:shadow-md transition-shadow cursor-pointer group flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                   <div>
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="font-playfair text-lg font-bold text-[#2C302E]">LF-{order.id}</span>
+                      <span className="font-playfair text-lg font-bold text-[#2C302E]">{order.id}</span>
                       <OrderStatusBadge status={order.status} />
                     </div>
                     <p className="font-sans text-sm text-[#5A635E]">

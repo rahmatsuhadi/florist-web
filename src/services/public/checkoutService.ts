@@ -35,7 +35,12 @@ import { formatIdr } from "@/utils/format";
 export async function createOrder(data: CreateOrderData) {
   try {
     // 1. Insert Order
-    const uniqueOrderId = `trx-${Math.random().toString(36).substring(2, 10)}${Date.now().toString(36).substring(4)}`;
+    const date = new Date();
+    const year = date.getFullYear().toString().slice(-2);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const randomChars = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const uniqueOrderId = `TRX-${year}${month}${day}-${randomChars}`;
 
     const [newOrder] = await db.insert(orders).values({
       id: uniqueOrderId,

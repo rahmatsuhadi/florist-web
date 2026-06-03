@@ -129,7 +129,7 @@ export const OrderDetailClient = ({ initialOrder }: { initialOrder: OrderWithIte
           <div className="bg-white border border-[#E8D9D2] p-8 shadow-sm">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-[#E8D9D2] pb-6 mb-6">
               <div>
-                <h1 className="font-playfair text-3xl text-[#2C302E] mb-2">Invoice LF-{order.id}</h1>
+                <h1 className="font-playfair text-3xl text-[#2C302E] mb-2">Invoice {order.id}</h1>
                 <p className="font-sans text-[#5A635E]">
                   {new Date(order.createdAt).toLocaleDateString("id-ID", {
                     weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit"

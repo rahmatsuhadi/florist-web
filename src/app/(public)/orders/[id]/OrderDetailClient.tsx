@@ -179,12 +179,28 @@ export const OrderDetailClient = ({ initialOrder }: { initialOrder: OrderWithIte
 
                     {/* @ts-ignore */}
                     {order.deliveryMethod === "pickup" ? (
-                      <div className="mt-2 p-3 bg-amber-50 border border-amber-100 rounded-none text-amber-800">
-                        <p className="font-medium">Ambil Sendiri (Pick Up)</p>
-                        <p className="text-xs mt-1">Silakan ambil pesanan Anda di toko fisik kami ketika status sudah "Siap Diambil".</p>
+                      <div className="mt-2 p-3 bg-[#FAFAF7] border border-[#E8D9D2] rounded-none text-[#2C302E]">
+                        <p className="font-medium text-brand">Ambil Sendiri (Pick Up)</p>
+                        {order.scheduledDate && order.scheduledTime && (
+                          <p className="text-sm mt-2">
+                            <span className="font-semibold">Jadwal Pengambilan:</span><br/>
+                            {new Date(order.scheduledDate).toLocaleDateString("id-ID", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} Pukul {order.scheduledTime}
+                          </p>
+                        )}
+                        <p className="text-xs mt-2 text-[#5A635E]">Silakan ambil pesanan Anda di toko fisik kami ketika status sudah "Siap Diambil".</p>
                       </div>
                     ) : (
-                      <p className="leading-relaxed">{order.customerAddress}</p>
+                      <>
+                        <p className="leading-relaxed">{order.customerAddress}</p>
+                        {order.scheduledDate && order.scheduledTime && (
+                          <div className="mt-2 p-3 bg-[#FAFAF7] border border-[#E8D9D2] rounded-none text-[#2C302E]">
+                            <p className="text-sm">
+                              <span className="font-semibold">Jadwal Pengiriman:</span><br/>
+                              {new Date(order.scheduledDate).toLocaleDateString("id-ID", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} Pukul {order.scheduledTime}
+                            </p>
+                          </div>
+                        )}
+                      </>
                     )}
 
                     {order.customerNotes && (
@@ -314,7 +330,7 @@ export const OrderDetailClient = ({ initialOrder }: { initialOrder: OrderWithIte
                                 </div>
                               )}
                             </div>
-                            
+
                             {details.paid_at && (
                               <div>
                                 <p className="text-xs text-gray-500 mb-1">Waktu Pembayaran Berhasil</p>
@@ -329,14 +345,14 @@ export const OrderDetailClient = ({ initialOrder }: { initialOrder: OrderWithIte
                         );
                       })()}
 
-                      <div>
+                      {/* <div>
                         <p className="text-xs text-gray-500 mb-1">Terakhir Diperbarui</p>
                         <p className="font-medium text-[#2C302E]">
                           {new Date(latestPayment.updatedAt).toLocaleString("id-ID", {
                             day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
                           })}
                         </p>
-                      </div>
+                      </div> */}
                     </>
                   )}
                 </div>

@@ -24,15 +24,17 @@ export const CartSidebar: React.FC = () => {
     phone: "",
     address: "",
   });
+  const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "pickup">("delivery");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleCheckout = async () => {
     const newErrors = {
       name: checkoutData.name.trim() ? "" : "Nama lengkap wajib diisi.",
       phone: checkoutData.phone.trim() ? "" : "Nomor WhatsApp wajib diisi.",
-      address: checkoutData.address.trim()
-        ? ""
-        : "Alamat pengiriman wajib diisi.",
+      address:
+        deliveryMethod === "delivery" && !checkoutData.address.trim()
+          ? "Alamat pengiriman wajib diisi."
+          : "",
     };
 
     setErrors(newErrors);
@@ -61,7 +63,8 @@ export const CartSidebar: React.FC = () => {
       const res = await createOrder({
         customerName: checkoutData.name,
         customerPhone: checkoutData.phone,
-        customerAddress: checkoutData.address,
+        customerAddress: deliveryMethod === "delivery" ? checkoutData.address : "",
+        deliveryMethod,
         totalAmount: cartTotal.toString(),
         items: orderItemsData,
       });
@@ -255,37 +258,70 @@ export const CartSidebar: React.FC = () => {
                       type="tel"
                       error={errors.phone}
                     />
+
                     <div className="mb-4">
-                      <label
-                        htmlFor="address-textarea"
-                        className="block font-sans text-sm text-[#5A635E] mb-2"
-                      >
-                        Alamat Pengiriman
+                      <label className="block font-sans text-sm text-[#5A635E] mb-2">
+                        Metode Pengiriman
                       </label>
-                      <textarea
-                        id="address-textarea"
-                        className={`w-full border-b border-[#E8D9D2] bg-transparent py-2 px-1 focus:outline-none focus:border-[#829E8D] transition-colors font-sans text-[#2C302E] resize-none ${errors.address
-                          ? "border-red-400 focus:border-red-400"
-                          : ""
+                      <div className="flex bg-[#FAFAF7] rounded-lg p-1 border border-[#E8D9D2]">
+                        <button
+                          type="button"
+                          onClick={() => setDeliveryMethod("delivery")}
+                          className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+                            deliveryMethod === "delivery"
+                              ? "bg-white shadow-sm text-[#2C302E] border border-gray-100"
+                              : "text-gray-400 hover:text-gray-600"
                           }`}
-                        rows={3}
-                        placeholder="Jl. Mawar No. 1..."
-                        value={checkoutData.address}
-                        onChange={(e) => {
-                          setCheckoutData({
-                            ...checkoutData,
-                            address: e.target.value,
-                          });
-                          if (errors.address)
-                            setErrors({ ...errors, address: "" });
-                        }}
-                      />
-                      {errors.address && (
-                        <span className="block font-sans text-xs text-red-500 mt-1">
-                          {errors.address}
-                        </span>
-                      )}
+                        >
+                          Kirim
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeliveryMethod("pickup")}
+                          className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+                            deliveryMethod === "pickup"
+                              ? "bg-white shadow-sm text-[#2C302E] border border-gray-100"
+                              : "text-gray-400 hover:text-gray-600"
+                          }`}
+                        >
+                          Ambil Sendiri
+                        </button>
+                      </div>
                     </div>
+
+                    {deliveryMethod === "delivery" && (
+                      <div className="mb-4">
+                        <label
+                          htmlFor="address-textarea"
+                          className="block font-sans text-sm text-[#5A635E] mb-2"
+                        >
+                          Alamat Pengiriman
+                        </label>
+                        <textarea
+                          id="address-textarea"
+                          className={`w-full border-b border-[#E8D9D2] bg-transparent py-2 px-1 focus:outline-none focus:border-[#829E8D] transition-colors font-sans text-[#2C302E] resize-none ${errors.address
+                            ? "border-red-400 focus:border-red-400"
+                            : ""
+                            }`}
+                          rows={3}
+                          placeholder="Jl. Mawar No. 1..."
+                          value={checkoutData.address}
+                          onChange={(e) => {
+                            setCheckoutData({
+                              ...checkoutData,
+                              address: e.target.value,
+                            });
+                            if (errors.address)
+                              setErrors({ ...errors, address: "" });
+                          }}
+                        />
+                        {errors.address && (
+                          <span className="block font-sans text-xs text-red-500 mt-1">
+                            {errors.address}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

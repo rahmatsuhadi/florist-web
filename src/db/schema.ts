@@ -6,6 +6,7 @@ import {
   jsonb,
   varchar,
   integer,
+  boolean,
 } from "drizzle-orm/pg-core";
 
 export const products = pgTable("products", {
@@ -73,4 +74,14 @@ export const users = pgTable("users", {
   role: varchar("role", { length: 50 }).notNull().default("admin"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  message: text("message").notNull(),
+  type: varchar("type", { length: 50 }).notNull().default("info"), // "info", "order", "payment", "system"
+  isRead: boolean("is_read").default(false).notNull(),
+  link: varchar("link", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });

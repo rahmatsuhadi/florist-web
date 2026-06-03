@@ -58,6 +58,7 @@ export const payments = pgTable("payments", {
   paymentToken: varchar("payment_token", { length: 255 }),
   paymentUrl: varchar("payment_url", { length: 255 }),
   paymentMethod: varchar("payment_method", { length: 100 }),
+  paymentDetails: jsonb("payment_details"),
   amount: varchar("amount", { length: 255 }).notNull(),
   status: varchar("status", { length: 50 }).notNull().default("pending"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

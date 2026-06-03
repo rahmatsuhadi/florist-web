@@ -11,6 +11,8 @@ export interface CreateOrderData {
   customerPhone: string;
   customerAddress: string;
   customerNotes?: string;
+  customerLatitude?: string;
+  customerLongitude?: string;
   deliveryMethod?: "delivery" | "pickup";
   totalAmount: string;
   items: {
@@ -41,6 +43,8 @@ export async function createOrder(data: CreateOrderData) {
       customerPhone: data.customerPhone,
       customerAddress: data.customerAddress,
       customerNotes: data.customerNotes || "",
+      customerLatitude: data.customerLatitude || null,
+      customerLongitude: data.customerLongitude || null,
       deliveryMethod: data.deliveryMethod || "delivery",
       totalAmount: data.totalAmount,
       status: "Menunggu Pembayaran",

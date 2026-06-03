@@ -7,12 +7,13 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { fadeInUp, staggerContainer } from "@/constants/animations";
-import { CATEGORIES, GALLERY_ITEMS, HERO_BANNERS } from "@/constants/mockData";
+import { CATEGORIES } from "@/constants/mockData";
 import { Button } from "@/components/atoms/Button";
 import { useShopStore } from "@/store/shopStore";
 import CategoryCard from "@/components/molecules/category/CategoryCard";
 import ProductCard from "@/components/molecules/product/ProductCard";
 import { Product } from "@/services/admin/productService";
+import { HeroBannerData, GalleryItemData } from "@/services/admin/contentService";
 
 const StoreMap = dynamic(() => import("@/components/molecules/map/StoreMap"), {
   ssr: false,
@@ -40,7 +41,15 @@ const SectionHeading = ({
   </motion.div>
 );
 
-export default function HomePageClient({ initialProducts }: { initialProducts: Product[] }) {
+export default function HomePageClient({ 
+  initialProducts,
+  heroBanners,
+  galleryItems,
+}: { 
+  initialProducts: Product[];
+  heroBanners: HeroBannerData[];
+  galleryItems: GalleryItemData[];
+}) {
   const shopName = useShopStore((s) => s.name);
   const fullName = useShopStore((s) => s.fullName);
   const address = useShopStore((s) => s.address);
@@ -49,14 +58,18 @@ export default function HomePageClient({ initialProducts }: { initialProducts: P
   const bestSellers = initialProducts.slice(0, 3);
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
+  const activeBanners = heroBanners.filter((b) => b.isActive).sort((a, b) => a.position - b.position);
+  const activeGallery = galleryItems.filter((g) => g.isActive).sort((a, b) => a.position - b.position);
+
   useEffect(() => {
+    if (activeBanners.length === 0) return;
     const interval = setInterval(() => {
-      setCurrentBannerIndex((prev) => (prev + 1) % HERO_BANNERS.length);
+      setCurrentBannerIndex((prev) => (prev + 1) % activeBanners.length);
     }, 6000);
     return () => clearInterval(interval);
-  }, []);
+  }, [activeBanners.length]);
 
-  const currentBanner = HERO_BANNERS[currentBannerIndex];
+  const currentBanner = activeBanners.length > 0 ? activeBanners[currentBannerIndex] : null;
 
   return (
     <motion.div
@@ -66,46 +79,48 @@ export default function HomePageClient({ initialProducts }: { initialProducts: P
     >
       {/* Hero Section */}
       <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden bg-black [clip-path:inset(0)]">
-        <div className="absolute inset-0 z-0">
-          <AnimatePresence mode="popLayout">
-            <motion.div
-              key={currentBanner.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.2, ease: "easeInOut" }}
-              className="fixed inset-0 w-full h-full"
-            >
-              <Image
-                src={currentBanner.image}
-                alt={currentBanner.title}
-                fill
-                priority
-                quality={90}
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-black/40" />
-            </motion.div>
-          </AnimatePresence>
-        </div>
-        <div className="relative z-10 text-center text-white px-6 max-w-4xl">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentBanner.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.8, ease: "easeInOut" }}
-            >
-              <h1 className="font-playfair text-5xl md:text-7xl mb-6 drop-shadow-lg leading-tight">
-                {currentBanner.title}
-              </h1>
-              <p className="font-sans text-lg md:text-xl mb-10 max-w-2xl mx-auto drop-shadow-md leading-relaxed text-gray-200">
-                {currentBanner.subtitle}
-              </p>
-            </motion.div>
-          </AnimatePresence>
-          <motion.div
+        {currentBanner && (
+          <>
+            <div className="absolute inset-0 z-0">
+              <AnimatePresence mode="popLayout">
+                <motion.div
+                  key={currentBanner.id || currentBannerIndex}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1.2, ease: "easeInOut" }}
+                  className="fixed inset-0 w-full h-full"
+                >
+                  <Image
+                    src={currentBanner.imageUrl}
+                    alt={currentBanner.title}
+                    fill
+                    priority
+                    quality={90}
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40" />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+            <div className="relative z-10 text-center text-white px-6 max-w-4xl">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentBanner.id || currentBannerIndex}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.8, ease: "easeInOut" }}
+                >
+                  <h1 className="font-playfair text-5xl md:text-7xl mb-6 drop-shadow-lg leading-tight">
+                    {currentBanner.title}
+                  </h1>
+                  <p className="font-sans text-lg md:text-xl mb-10 max-w-2xl mx-auto drop-shadow-md leading-relaxed text-gray-200">
+                    {currentBanner.subtitle}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+              <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
@@ -117,6 +132,8 @@ export default function HomePageClient({ initialProducts }: { initialProducts: P
             </Link>
           </motion.div>
         </div>
+        </>
+        )}
       </section>
 
       {/* Slogan & Business Intro Section */}
@@ -261,14 +278,14 @@ export default function HomePageClient({ initialProducts }: { initialProducts: P
             viewport={{ once: true }}
             className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-[repeat(3,_200px)] gap-4 max-w-6xl mx-auto w-full"
           >
-            {GALLERY_ITEMS.map((item) => (
+            {activeGallery.map((item, index) => (
               <div
-                key={item.id}
+                key={item.id || `gallery-${index}`}
                 className={`relative overflow-hidden group rounded-sm shadow-sm bg-gray-200 aspect-[4/3] md:aspect-auto ${item.gridClass}`}
               >
                 <Image
-                  src={item.image}
-                  alt={item.alt}
+                  src={item.imageUrl}
+                  alt={item.altText}
                   fill
                   quality={80}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"

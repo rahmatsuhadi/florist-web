@@ -11,6 +11,12 @@
   --font-serif: var(--font-playfair-display);
   --font-sans: var(--font-lora);
   --font-inter: var(--font-inter);
+  
+  /* Brand Theme Colors */
+  --color-brand: #4A5D4E;
+  --color-brand-hover: #3d4d40;
+  --color-brand-light: #F5F2EB;
+  --color-brand-light-hover: #E8E4D9;
 }
 
 body {

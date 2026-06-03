@@ -1,13 +1,13 @@
 import type React from "react";
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
   variant?: "underline" | "outline";
   icon?: React.ReactNode;
 }
 
-export const Input: React.FC<InputProps> = ({
+export const Textarea: React.FC<TextareaProps> = ({
   label,
   id,
   className = "",
@@ -16,9 +16,9 @@ export const Input: React.FC<InputProps> = ({
   icon,
   ...props
 }) => {
-  const inputId = id || (label ? `input-${label.toLowerCase().replace(/\s+/g, "-")}` : `input-${Math.random()}`);
+  const textareaId = id || (label ? `textarea-${label.toLowerCase().replace(/\s+/g, "-")}` : `textarea-${Math.random()}`);
 
-  const baseClasses = "w-full focus:outline-none transition-colors font-sans text-[#2C302E] bg-transparent";
+  const baseClasses = "w-full focus:outline-none transition-colors font-sans text-[#2C302E] bg-transparent resize-none";
   
   const underlineClasses = `border-b py-2 px-1 ${
     error 
@@ -26,7 +26,7 @@ export const Input: React.FC<InputProps> = ({
       : "border-[#E8D9D2] focus:border-[#829E8D]"
   }`;
 
-  const outlineClasses = `border rounded-none py-3 ${icon ? "pl-10 pr-4" : "px-4"} bg-white ${
+  const outlineClasses = `border rounded-none p-4 ${icon ? "pl-10" : ""} bg-white ${
     error 
       ? "border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-400" 
       : "border-[#E8D9D2] focus:border-[#829E8D] focus:ring-1 focus:ring-[#829E8D]"
@@ -38,24 +38,18 @@ export const Input: React.FC<InputProps> = ({
     <div className="mb-4">
       {label && (
         <label
-          htmlFor={inputId}
-          className="block font-sans text-sm font-medium text-gray-700 mb-2"
+          htmlFor={textareaId}
+          className="block font-sans text-sm font-medium text-gray-700 mb-2 flex items-center gap-2"
         >
+          {icon}
           {label}
         </label>
       )}
-      <div className="relative">
-        {icon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-            {icon}
-          </div>
-        )}
-        <input
-          id={inputId}
-          className={combinedClasses}
-          {...props}
-        />
-      </div>
+      <textarea
+        id={textareaId}
+        className={combinedClasses}
+        {...props}
+      />
       {error && (
         <span className="block font-sans text-xs text-red-500 mt-1">
           {error}
@@ -65,4 +59,4 @@ export const Input: React.FC<InputProps> = ({
   );
 };
 
-export default Input;
+export default Textarea;

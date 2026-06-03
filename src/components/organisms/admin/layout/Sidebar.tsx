@@ -10,6 +10,7 @@ import {
   Receipt,
   Settings,
   LogOut,
+  CreditCard,
 } from "lucide-react";
 import { logout } from "@/services/admin/authService";
 
@@ -20,9 +21,10 @@ export const Sidebar = () => {
   const menuItems = [
     { id: "overview", path: "/admin", label: "Overview", icon: LayoutDashboard },
     { id: "products", path: "/admin/products", label: "Katalog Produk", icon: Package },
-    { id: "storefront", path: "/admin/storefront", label: "Store Front", icon: ImageIcon },
+    // { id: "storefront", path: "/admin/storefront", label: "Store Front", icon: ImageIcon },
     { id: "orders", path: "/admin/orders", label: "Transaksi WA", icon: Receipt },
-    { id: "settings", path: "/admin/settings", label: "Pengaturan", icon: Settings },
+    { id: "payments", path: "/admin/payments", label: "Riwayat Bayar", icon: CreditCard },
+    // { id: "settings", path: "/admin/settings", label: "Pengaturan", icon: Settings },
   ];
 
   const handleLogout = async () => {
@@ -46,11 +48,10 @@ export const Sidebar = () => {
             <button
               key={item.id}
               onClick={() => router.push(item.path)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all relative group ${
-                isActive
-                  ? "text-[#4A5D4E]"
-                  : "text-gray-500 hover:text-[#4A5D4E] hover:bg-[#4A5D4E]/5"
-              }`}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all relative group ${isActive
+                ? "text-[#4A5D4E]"
+                : "text-gray-500 hover:text-[#4A5D4E] hover:bg-[#4A5D4E]/5"
+                }`}
             >
               {isActive && (
                 <motion.div

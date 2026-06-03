@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Lora, Playfair_Display, Inter } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 import { SHOP_INFO } from "../constants/shopInfo";
 
@@ -79,6 +80,19 @@ export default function RootLayout({
         className="min-h-full flex flex-col font-sans selection:bg-[#E8D9D2] selection:text-[#2C302E]"
       >
         {children}
+        <Toaster 
+          position="bottom-center"
+          toastOptions={{
+            unstyled: true,
+            classNames: {
+              toast: "flex items-center gap-3 px-6 py-3 rounded-full shadow-2xl font-sans text-sm font-semibold whitespace-nowrap",
+              success: "bg-[#2C302E] text-[#829E8D] [&_[data-title]]:text-white",
+              error: "bg-red-500 text-white [&_[data-title]]:text-white",
+              info: "bg-blue-500 text-white [&_[data-title]]:text-white",
+              warning: "bg-amber-500 text-white [&_[data-title]]:text-white",
+            }
+          }}
+        />
       </body>
     </html>
   );

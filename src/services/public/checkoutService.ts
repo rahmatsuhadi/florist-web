@@ -14,6 +14,8 @@ export interface CreateOrderData {
   customerLatitude?: string;
   customerLongitude?: string;
   deliveryMethod?: "delivery" | "pickup";
+  scheduledDate?: string;
+  scheduledTime?: string;
   totalAmount: string;
   items: {
     productId?: number;
@@ -51,6 +53,8 @@ export async function createOrder(data: CreateOrderData) {
       customerLatitude: data.customerLatitude || null,
       customerLongitude: data.customerLongitude || null,
       deliveryMethod: data.deliveryMethod || "delivery",
+      scheduledDate: data.scheduledDate || null,
+      scheduledTime: data.scheduledTime || null,
       totalAmount: data.totalAmount,
       status: "Menunggu Pembayaran",
     }).returning();
@@ -89,6 +93,10 @@ export async function createOrder(data: CreateOrderData) {
           first_name: data.customerName,
           address: data.customerAddress,
         }
+      },
+      custom_expiry: {
+        expiry_duration: 60,
+        unit: "minute"
       }
     };
 
@@ -209,6 +217,10 @@ export async function generateNewPaymentToken(orderId: string) {
           first_name: order.customerName,
           address: order.customerAddress || "",
         }
+      },
+      custom_expiry: {
+        expiry_duration: 60,
+        unit: "minute"
       }
     };
 

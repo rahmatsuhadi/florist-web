@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { ChevronLeft, Sparkles, MapPin, MessageCircle, Check, Send, FileText, Smartphone, Loader2 } from "lucide-react";
+import { ChevronLeft, Sparkles, MapPin, MessageCircle, Check, Send, FileText, Smartphone, Loader2, Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { formatIdr } from "@/utils/format";
 import { OrderWithItems, updateOrderStatus } from "@/services/admin/orderService";
@@ -210,6 +210,24 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
                   )}
                 </div>
               </div>
+
+              {/* Jadwal Pengiriman/Pengambilan */}
+              {/* @ts-ignore */}
+              {(transaction.scheduledDate || transaction.scheduledTime) && (
+                <div className="flex items-start gap-3 border-t border-gray-100 pt-4">
+                  <div className="p-2 bg-blue-50 text-blue-600 rounded-lg mt-0.5"><Calendar size={16} /></div>
+                  <div>
+                    <h5 className="font-semibold text-gray-900 text-sm">
+                      {/* @ts-ignore */}
+                      {transaction.deliveryMethod === "pickup" ? "Jadwal Pengambilan" : "Jadwal Pengiriman"}
+                    </h5>
+                    <p className="text-xs text-gray-600 mt-1 font-sans">
+                      <span className="font-semibold text-gray-800">Tanggal:</span> {/* @ts-ignore */} {transaction.scheduledDate || "-"}<br/>
+                      <span className="font-semibold text-gray-800">Jam:</span> {/* @ts-ignore */} {transaction.scheduledTime || "-"}
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* <div className="flex items-start gap-3 border-t border-gray-100 pt-4">
                 <div className="p-2 bg-amber-50 text-amber-600 rounded-lg mt-0.5"><FileText size={16} /></div>

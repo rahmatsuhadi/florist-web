@@ -4,10 +4,12 @@ import { payments, orders } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import crypto from "crypto";
 import { coreApi } from "@/lib/midtrans";
+import { calculatePaymentStatus, extractPaymentDetails } from "@/utils/midtransUtils";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+
 
     // Verify signature key from Midtrans to ensure authenticity (Layer 1)
     const serverKey = process.env.MIDTRANS_SERVER_KEY || "";
@@ -56,33 +58,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Amount mismatch" }, { status: 400 });
     }
 
-    let paymentStatus = paymentRecord.status;
-    let newOrderStatus = null;
+    const { paymentStatus, newOrderStatus } = calculatePaymentStatus(
+      transactionStatus,
+      fraudStatus,
+      paymentRecord.status
+    );
 
-    if (transactionStatus === "capture") {
-      if (fraudStatus === "accept") {
-        paymentStatus = "success";
-        newOrderStatus = "Sudah Dibayar";
-      } else {
-        paymentStatus = "pending";
-      }
-    } else if (transactionStatus === "settlement") {
-      paymentStatus = "success";
-      newOrderStatus = "Sudah Dibayar";
-    } else if (transactionStatus === "cancel" || transactionStatus === "deny" || transactionStatus === "expire") {
-      paymentStatus = "failed";
-    } else if (transactionStatus === "pending") {
-      // Don't downgrade if already success
-      if (paymentStatus !== "success") {
-        paymentStatus = "pending";
-      }
-    }
+    const paymentDetails = extractPaymentDetails(paymentType, authenticData);
+    
+    console.log(paymentDetails, "Payment Detail");
 
     // 1. Update Payment Record
     await db.update(payments)
       .set({
         status: paymentStatus,
         paymentMethod: paymentType,
+        paymentDetails,
         midtransTransactionId: transaction_id,
         updatedAt: new Date(),
       })

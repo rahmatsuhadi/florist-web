@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm";
 import crypto from "crypto";
 import { coreApi } from "@/lib/midtrans";
 import { calculatePaymentStatus, extractPaymentDetails } from "@/utils/midtransUtils";
+import { createNotification } from "@/services/admin/notificationService";
+import { formatIdr } from "@/utils/format";
 
 export async function POST(req: Request) {
   try {
@@ -87,6 +89,25 @@ export async function POST(req: Request) {
           updatedAt: new Date()
         })
         .where(eq(orders.id, paymentRecord.orderId));
+        
+      if (newOrderStatus === "Sudah Dibayar") {
+        await createNotification({
+          title: "Pembayaran Diterima!",
+          message: `Pembayaran sebesar ${formatIdr(grossAmount)} untuk pesanan ${paymentRecord.orderId} telah berhasil terverifikasi.`,
+          type: "payment",
+          link: `/admin/orders`,
+        });
+      }
+    } else if (paymentStatus === "success" || paymentStatus === "settlement" || paymentStatus === "capture") {
+      // In case the order was already marked but we want to notify anyway, or just log
+      if (paymentRecord.status !== "success" && paymentRecord.status !== "settlement" && paymentRecord.status !== "capture") {
+        await createNotification({
+          title: "Pembayaran Diverifikasi",
+          message: `Transaksi pembayaran PAY-${paymentId} sebesar ${formatIdr(grossAmount)} berhasil melalui Midtrans.`,
+          type: "payment",
+          link: `/admin/payments`,
+        });
+      }
     }
 
     return NextResponse.json({ status: "success" });

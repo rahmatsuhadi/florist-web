@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Search, CreditCard, Clock, FileCheck, FileText, AlertCircle, CheckCircle } from 'lucide-react';
-import { PaymentWithCustomer, checkPaymentStatus } from '@/services/admin/paymentService';
+import { PaymentWithCustomer, checkPaymentStatus, getPaymentHistory } from '@/services/admin/paymentService';
 import { formatIdr } from '@/utils/format';
 import { useRouter } from 'next/navigation';
 
@@ -16,9 +16,12 @@ import {
   TableBody, TableRow, TableCell, TablePagination 
 } from "@/components/molecules/admin/table/Table";
 import { toast } from 'sonner';
+import { LoadingSpinner } from '@/components/atoms/admin/LoadingSpinner';
 
-export const PaymentHistory = ({ payments }: { payments: PaymentWithCustomer[] }) => {
+export const PaymentHistory = () => {
   const router = useRouter();
+  const [payments, setPayments] = useState<PaymentWithCustomer[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [methodFilter, setMethodFilter] = useState('Semua');
   const [selectedPayment, setSelectedPayment] = useState<PaymentWithCustomer | null>(null);
@@ -28,6 +31,20 @@ export const PaymentHistory = ({ payments }: { payments: PaymentWithCustomer[] }
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  useEffect(() => {
+    const fetchPayments = async () => {
+      try {
+        const data = await getPaymentHistory();
+        setPayments(data);
+      } catch (error) {
+        console.error("Failed to fetch payments:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchPayments();
+  }, []);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -78,12 +95,7 @@ export const PaymentHistory = ({ payments }: { payments: PaymentWithCustomer[] }
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
-      className="space-y-6 pb-20"
-    >
+    <div className="space-y-6 pb-20">
       <header className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
           <h1 className="font-serif text-3xl font-semibold text-gray-900 mb-1">Riwayat Pelunasan Kas</h1>
@@ -104,7 +116,26 @@ export const PaymentHistory = ({ payments }: { payments: PaymentWithCustomer[] }
         </div>
       </header>
 
-      {/* STAT CARDS ON THE PAYMENT LOG */}
+      <AnimatePresence mode="wait">
+      {isLoading ? (
+        <motion.div
+          key="loading"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <LoadingSpinner text="Memuat Riwayat..." className="py-20" />
+        </motion.div>
+      ) : (
+        <motion.div
+          key="content"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="space-y-6"
+        >
+          {/* STAT CARDS ON THE PAYMENT LOG */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <PaymentStatCard 
           title="Total Mutasi Verifikasi" 
@@ -234,6 +265,9 @@ export const PaymentHistory = ({ payments }: { payments: PaymentWithCustomer[] }
           onConfirm={handleCheckStatus}
         />
       )}
-    </motion.div>
+      </motion.div>
+      )}
+      </AnimatePresence>
+    </div>
   );
 };

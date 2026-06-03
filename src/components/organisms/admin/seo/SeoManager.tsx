@@ -4,6 +4,7 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Save, Search, LayoutTemplate, Box, Type, AlignLeft, Hash, Globe } from "lucide-react";
 import { useSeo } from "@/hooks/admin/useSeo";
+import { LoadingSpinner } from "@/components/atoms/admin/LoadingSpinner";
 
 export const SeoManager = () => {
   const {
@@ -65,15 +66,13 @@ export const SeoManager = () => {
 
       <AnimatePresence mode="wait">
         {isLoading ? (
-          <motion.div 
+          <motion.div
             key="loading"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center py-20"
           >
-            <div className="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-gray-500 font-medium mt-4">Memuat Data SEO...</p>
+            <LoadingSpinner text="Memuat Data SEO..." className="py-20" />
           </motion.div>
         ) : (
           <motion.div

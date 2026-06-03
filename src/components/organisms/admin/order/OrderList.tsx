@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Search, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { formatIdr } from "@/utils/format";
@@ -9,23 +9,40 @@ import {
   TableContainer, TableWrapper, TableHeader, TableHead, 
   TableBody, TableRow, TableCell, TablePagination 
 } from "@/components/molecules/admin/table/Table";
+import { LoadingSpinner } from "@/components/atoms/admin/LoadingSpinner";
 
-import { OrderWithItems } from "@/services/admin/orderService";
+import { OrderWithItems, getOrders } from "@/services/admin/orderService";
 
-export const OrderList = ({ initialOrders }: { initialOrders: OrderWithItems[] }) => {
+export const OrderList = () => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("Semua Status");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [orders, setOrders] = useState<OrderWithItems[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const statuses = ["Semua Status", "Menunggu Pembayaran", "Sudah Dibayar", "Sedang Diproses", "Sedang Dikirim", "Selesai", "Dibatalkan"];
+
+  React.useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const data = await getOrders();
+        setOrders(data);
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchOrders();
+  }, []);
 
   React.useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, statusFilter]);
 
-  const filteredTransactions = initialOrders.filter(trx => {
+  const filteredTransactions = orders.filter(trx => {
     const matchStatus = statusFilter === "Semua Status" || trx.status === statusFilter;
     const searchString = `${trx.id} ${trx.customerName} ${trx.customerPhone}`.toLowerCase();
     const matchSearch = searchString.includes(searchQuery.toLowerCase());
@@ -55,12 +72,7 @@ export const OrderList = ({ initialOrders }: { initialOrders: OrderWithItems[] }
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
-      className="space-y-6"
-    >
+    <div className="space-y-6">
       <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h1 className="font-serif text-3xl font-semibold text-gray-900 mb-1">Manajemen Pesanan</h1>
@@ -79,22 +91,41 @@ export const OrderList = ({ initialOrders }: { initialOrders: OrderWithItems[] }
         </div>
       </header>
 
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-        {statuses.map((status) => (
-          <button
-            key={status}
-            onClick={() => setStatusFilter(status)}
-            className={`px-5 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${statusFilter === status
-              ? 'bg-brand text-white shadow-sm'
-              : 'bg-white border border-brand/20 text-gray-600 hover:bg-brand/5'
-              }`}
-          >
-            {status}
-          </button>
-        ))}
-      </div>
+      <AnimatePresence mode="wait">
+      {isLoading ? (
+        <motion.div
+          key="loading"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <LoadingSpinner text="Memuat Pesanan..." className="py-20" />
+        </motion.div>
+      ) : (
+        <motion.div
+          key="content"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="space-y-6"
+        >
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {statuses.map((status) => (
+              <button
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                className={`px-5 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${statusFilter === status
+                  ? 'bg-brand text-white shadow-sm'
+                  : 'bg-white border border-brand/20 text-gray-600 hover:bg-brand/5'
+                  }`}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
 
-      <TableContainer>
+          <TableContainer>
         <TableWrapper>
           <TableHeader>
             <TableHead>ID Transaksi</TableHead>
@@ -186,6 +217,9 @@ export const OrderList = ({ initialOrders }: { initialOrders: OrderWithItems[] }
           />
         )}
       </TableContainer>
-    </motion.div>
+      </motion.div>
+      )}
+      </AnimatePresence>
+    </div>
   );
 };

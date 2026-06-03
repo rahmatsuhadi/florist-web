@@ -58,15 +58,15 @@ export const TrackOrderClient = () => {
           </p>
         </div>
         
-        <form onSubmit={handleSearch} className="flex gap-4 mb-10 bg-white p-2 rounded-sm shadow-sm border border-[#E8D9D2]">
+        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-10 bg-white p-3 sm:p-2 rounded-sm shadow-sm border border-[#E8D9D2]">
           <input 
             type="tel" 
             placeholder="Contoh: 08123456789" 
-            className="flex-1 px-4 py-2 font-sans focus:outline-none bg-transparent"
+            className="flex-1 px-3 sm:px-4 py-2 font-sans focus:outline-none bg-transparent w-full"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
           />
-          <Button type="submit" disabled={isSearching} className="gap-2 px-8 bg-[#829E8D] text-white flex items-center justify-center min-w-[120px]">
+          <Button type="submit" disabled={isSearching} className="w-full sm:w-auto gap-2 px-8 py-3 sm:py-2 bg-[#829E8D] text-white flex items-center justify-center">
             {isSearching ? <Loader2 size={18} className="animate-spin" /> : <><Search size={18} /> Cari</>}
           </Button>
         </form>

@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Search, Plus, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Product, getProducts } from "@/services/admin/productService";
 import { ProductCard } from "@/components/molecules/admin/product/ProductCard";
 import { CATEGORIES } from "@/constants/mockData";
+import { LoadingSpinner } from "@/components/atoms/admin/LoadingSpinner";
 
 export const ProductList = () => {
   const router = useRouter();
@@ -46,25 +47,8 @@ export const ProductList = () => {
     router.push(`/admin/products/new`);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-          className="w-8 h-8 border-4 border-brand/30 border-t-brand rounded-full"
-        />
-      </div>
-    );
-  }
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
-      className="space-y-6"
-    >
+    <div className="space-y-6">
       <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h1 className="font-serif text-3xl font-semibold text-gray-900 mb-1">
@@ -97,7 +81,26 @@ export const ProductList = () => {
         </div>
       </header>
 
-      {/* Filter Kategori */}
+      <AnimatePresence mode="wait">
+      {isLoading ? (
+        <motion.div
+          key="loading"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <LoadingSpinner text="Memuat Produk..." className="py-20" />
+        </motion.div>
+      ) : (
+        <motion.div
+          key="content"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="space-y-6"
+        >
+          {/* Filter Kategori */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
         {[{ id: "Semua", name: "Semua Kategori" }, ...CATEGORIES].map((category) => (
           <button
@@ -132,6 +135,9 @@ export const ProductList = () => {
           ))}
         </div>
       )}
-    </motion.div>
+      </motion.div>
+      )}
+      </AnimatePresence>
+    </div>
   );
 };

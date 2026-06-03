@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import { getPaymentHistory } from "@/services/admin/paymentService";
 import { PaymentHistory } from "@/components/organisms/admin/payment/PaymentHistory";
 
 export const metadata: Metadata = {
@@ -9,10 +8,8 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPaymentsPage() {
-  const payments = await getPaymentHistory();
-
+export default function AdminPaymentsPage() {
   return (
-    <PaymentHistory payments={payments} />
+    <PaymentHistory />
   );
 }

@@ -10,8 +10,9 @@ import { uploadImageAction, removeImageAction } from "@/services/admin/storageSe
 import { ConfirmModal } from "@/components/molecules/admin/ConfirmModal";
 import Image from "next/image";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Draggable from "react-draggable";
+import { LoadingSpinner } from "@/components/atoms/admin/LoadingSpinner";
 
 export const ContentManager = () => {
   const {
@@ -29,10 +30,6 @@ export const ContentManager = () => {
   } = useContent();
 
   const [activeTab, setActiveTab] = useState<"hero" | "gallery">("hero");
-
-  if (isLoading) {
-    return <div className="p-8 text-center text-[#5A635E]">Memuat data konten...</div>;
-  }
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-[#E8D9D2] overflow-hidden">
@@ -56,8 +53,25 @@ export const ContentManager = () => {
       </div>
 
       <div className="p-6">
-        {activeTab === "hero" ? (
-          <div className="space-y-6">
+        <AnimatePresence mode="wait">
+        {isLoading ? (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <LoadingSpinner text="Memuat data konten..." className="py-20" />
+          </motion.div>
+        ) : activeTab === "hero" ? (
+          <motion.div
+            key="hero"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-6"
+          >
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="font-playfair text-xl text-[#2C302E]">Pengaturan Banner</h3>
@@ -85,9 +99,16 @@ export const ContentManager = () => {
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         ) : (
-          <div className="space-y-6">
+          <motion.div
+            key="gallery"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-6"
+          >
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="font-playfair text-xl text-[#2C302E]">Pengaturan Galeri</h3>
@@ -115,8 +136,9 @@ export const ContentManager = () => {
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         )}
+        </AnimatePresence>
       </div>
     </div>
   );

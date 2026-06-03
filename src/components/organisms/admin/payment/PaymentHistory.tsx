@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Search, CreditCard, Clock, FileCheck, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 import { PaymentWithCustomer, checkPaymentStatus } from '@/services/admin/paymentService';
 import { formatIdr } from '@/utils/format';
@@ -10,6 +11,11 @@ import { PaymentStatusBadge } from '@/components/atoms/admin/payment/PaymentStat
 import { PaymentStatCard } from '@/components/molecules/admin/payment/PaymentStatCard';
 import { PaymentDetailModal } from '@/components/molecules/admin/payment/PaymentDetailModal';
 import { PaymentConfirmModal } from '@/components/molecules/admin/payment/PaymentConfirmModal';
+import { 
+  TableContainer, TableWrapper, TableHeader, TableHead, 
+  TableBody, TableRow, TableCell, TablePagination 
+} from "@/components/molecules/admin/table/Table";
+import { toast } from 'sonner';
 
 export const PaymentHistory = ({ payments }: { payments: PaymentWithCustomer[] }) => {
   const router = useRouter();
@@ -18,7 +24,6 @@ export const PaymentHistory = ({ payments }: { payments: PaymentWithCustomer[] }
   const [selectedPayment, setSelectedPayment] = useState<PaymentWithCustomer | null>(null);
   const [checkingPayment, setCheckingPayment] = useState<PaymentWithCustomer | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [toastMsg, setToastMsg] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
   
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,24 +33,19 @@ export const PaymentHistory = ({ payments }: { payments: PaymentWithCustomer[] }
     setCurrentPage(1);
   }, [searchQuery, methodFilter]);
 
-  const showToast = (message: string, type: 'success' | 'error') => {
-    setToastMsg({ message, type });
-    setTimeout(() => setToastMsg(null), 3000);
-  };
-
   const handleCheckStatus = async () => {
     if (!checkingPayment) return;
     setIsProcessing(true);
     try {
       const result = await checkPaymentStatus(checkingPayment.id);
       if (result.success) {
-        showToast(result.message, 'success');
+        toast.success(result.message);
         router.refresh();
       } else {
-        showToast(result.message, 'error');
+        toast.error(result.message);
       }
-    } catch (error: any) {
-      showToast(error.message || 'Gagal mengecek status', 'error');
+    } catch (error) {
+      toast.error('Terjadi kesalahan jaringan saat mengecek status Midtrans');
     } finally {
       setIsProcessing(false);
       setCheckingPayment(null);
@@ -78,11 +78,16 @@ export const PaymentHistory = ({ payments }: { payments: PaymentWithCustomer[] }
   };
 
   return (
-    <div className="space-y-6 font-sans relative pb-20">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      className="space-y-6 pb-20"
+    >
       <header className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
           <h1 className="font-serif text-3xl font-semibold text-gray-900 mb-1">Riwayat Pelunasan Kas</h1>
-          <p className="text-gray-500 font-sans text-sm">Rekam mutasi kas masuk, verifikasi transfer bank, e-wallet, dan status settlement Midtrans.</p>
+          <p className="text-gray-500">Rekam mutasi kas masuk, verifikasi transfer bank, e-wallet, dan status settlement Midtrans.</p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
@@ -93,7 +98,7 @@ export const PaymentHistory = ({ payments }: { payments: PaymentWithCustomer[] }
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari Order ID / Pelanggan..."
-              className="pl-10 pr-4 py-2.5 bg-white border border-[#4A5D4E]/20 rounded-xl outline-none focus:border-[#4A5D4E] focus:ring-1 focus:ring-[#4A5D4E] transition-all w-full sm:w-64 shadow-sm text-sm"
+              className="pl-10 pr-4 py-2.5 bg-white border border-brand/20 rounded-xl outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-all w-full sm:w-64 shadow-sm"
             />
           </div>
         </div>
@@ -122,15 +127,15 @@ export const PaymentHistory = ({ payments }: { payments: PaymentWithCustomer[] }
       </div>
 
       {/* FILTER BUTTONS */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
         {['Semua', 'Transfer Bank', 'E-Wallet', 'Lainnya'].map((type) => (
           <button
             key={type}
             onClick={() => setMethodFilter(type)}
-            className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+            className={`px-5 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
               methodFilter === type
-                ? 'bg-[#4A5D4E] text-white shadow-sm'
-                : 'bg-white border border-[#4A5D4E]/10 text-gray-500 hover:bg-[#4A5D4E]/5'
+                ? 'bg-brand text-white shadow-sm'
+                : 'bg-white border border-brand/20 text-gray-600 hover:bg-brand/5'
             }`}
           >
             {type}
@@ -139,129 +144,77 @@ export const PaymentHistory = ({ payments }: { payments: PaymentWithCustomer[] }
       </div>
 
       {/* MAIN PAYMENT TABLE */}
-      <div className="bg-white rounded-2xl border border-[#4A5D4E]/10 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-gray-100 bg-[#F5F2EB]/30 text-gray-400 font-semibold uppercase text-xs">
-                <th className="px-6 py-4 font-medium">No. Bayar</th>
-                <th className="px-6 py-4 font-medium">ID Order</th>
-                <th className="px-6 py-4 font-medium">Pelanggan</th>
-                <th className="px-6 py-4 font-medium">Metode</th>
-                <th className="px-6 py-4 font-medium">Update Terakhir</th>
-                <th className="px-6 py-4 font-medium">Nominal</th>
-                <th className="px-6 py-4 text-center">Status</th>
-                <th className="px-6 py-4 text-right">Tindakan</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
+      <TableContainer>
+        <TableWrapper>
+          <TableHeader>
+            <TableHead>No. Bayar</TableHead>
+            <TableHead>ID Order</TableHead>
+            <TableHead>Pelanggan</TableHead>
+            <TableHead>Metode</TableHead>
+            <TableHead>Update Terakhir</TableHead>
+            <TableHead>Nominal</TableHead>
+            <TableHead className="text-center">Status</TableHead>
+            <TableHead className="text-right">Tindakan</TableHead>
+          </TableHeader>
+          <TableBody>
               {currentPayments.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="text-center py-16 text-gray-400">
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-16 text-gray-400">
                     <FileText size={40} className="mx-auto text-gray-200 mb-2" />
                     Belum ada riwayat pelunasan kas masuk yang terekam.
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ) : (
                 currentPayments.map((pay) => (
-                  <tr key={pay.id} className="hover:bg-[#FDFBF7]/40 transition-colors">
-                    <td className="px-6 py-4.5 font-bold text-gray-900">PAY-{pay.id}</td>
-                    <td className="px-6 py-4.5 font-semibold text-[#4A5D4E]">{pay.orderId}</td>
-                    <td className="px-6 py-4.5">
+                  <TableRow key={pay.id}>
+                    <TableCell className="font-bold text-gray-900">PAY-{pay.id}</TableCell>
+                    <TableCell className="font-semibold text-brand">{pay.orderId}</TableCell>
+                    <TableCell>
                       <p className="font-semibold text-gray-900">{pay.customerName}</p>
                       <p className="text-[10px] text-gray-400 font-mono truncate max-w-[120px]" title={pay.midtransTransactionId || ''}>
                         {pay.midtransTransactionId?.split('-')[0] || 'Pending'}
                       </p>
-                    </td>
-                    <td className="px-6 py-4.5 font-medium text-gray-700 capitalize">
+                    </TableCell>
+                    <TableCell className="font-medium text-gray-700 capitalize">
                       {pay.paymentMethod?.replace('_', ' ') || 'Belum dipilih'}
-                    </td>
-                    <td className="px-6 py-4.5 text-xs text-gray-400">
+                    </TableCell>
+                    <TableCell className="text-gray-500 text-xs">
                       {new Date(pay.updatedAt).toLocaleString('id-ID')}
-                    </td>
-                    <td className="px-6 py-4.5 font-extrabold text-[#4A5D4E]">{formatIdr(Number(pay.amount))}</td>
-                    <td className="px-6 py-4.5 text-center">
+                    </TableCell>
+                    <TableCell className="font-extrabold text-brand">{formatIdr(Number(pay.amount))}</TableCell>
+                    <TableCell className="text-center">
                       <PaymentStatusBadge status={pay.status} />
-                    </td>
-                    <td className="px-6 py-4.5 text-right">
+                    </TableCell>
+                    <TableCell className="text-right">
                       <button
                         onClick={() => setSelectedPayment(pay)}
-                        className="text-xs font-semibold text-[#4A5D4E] hover:underline"
+                        className="text-xs font-semibold text-brand hover:underline"
                       >
                         Detail Struk
                       </button>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))
               )}
-            </tbody>
-          </table>
-        </div>
+          </TableBody>
+        </TableWrapper>
         
         {/* Pagination Controls */}
-        <div className="p-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 font-sans bg-gray-50/50">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">Tampilkan</span>
-            <select
-              value={itemsPerPage}
-              onChange={(e) => {
-                setItemsPerPage(Number(e.target.value));
-                setCurrentPage(1);
-              }}
-              className="border border-gray-200 rounded-lg text-sm px-2 py-1 outline-none focus:border-[#4A5D4E]"
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-            </select>
-            <span className="text-sm text-gray-500">
-              dari {filteredPayments.length} riwayat
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors bg-white shadow-sm"
-            >
-              Kembali
-            </button>
-
-            <div className="flex items-center gap-1">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                // Only show 5 pages around current page for large datasets
-                if (page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)) {
-                  return (
-                    <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition-colors shadow-sm ${currentPage === page
-                        ? "bg-[#4A5D4E] text-white font-medium border border-[#4A5D4E]"
-                        : "text-gray-600 hover:bg-gray-100 bg-white border border-gray-200"
-                        }`}
-                    >
-                      {page}
-                    </button>
-                  );
-                } else if (page === currentPage - 2 || page === currentPage + 2) {
-                  return <span key={page} className="text-gray-400">...</span>;
-                }
-                return null;
-              })}
-            </div>
-
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages || totalPages === 0}
-              className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors bg-white shadow-sm"
-            >
-              Lanjut
-            </button>
-          </div>
-        </div>
-      </div>
+        {filteredPayments.length > 0 && (
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            itemsPerPage={itemsPerPage}
+            totalItems={filteredPayments.length}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(limit) => {
+              setItemsPerPage(limit);
+              setCurrentPage(1);
+            }}
+            itemName="riwayat"
+          />
+        )}
+      </TableContainer>
 
       {/* DETAIL MODAL */}
       {selectedPayment && (
@@ -281,16 +234,6 @@ export const PaymentHistory = ({ payments }: { payments: PaymentWithCustomer[] }
           onConfirm={handleCheckStatus}
         />
       )}
-
-      {/* TOAST MESSAGE */}
-      {toastMsg && (
-        <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 font-sans text-sm font-semibold whitespace-nowrap animate-bounce-in
-          ${toastMsg.type === 'success' ? 'bg-[#2C302E] text-[#829E8D]' : 'bg-red-500 text-white'}`}
-        >
-          {toastMsg.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
-          <span className={toastMsg.type === 'success' ? 'text-white' : ''}>{toastMsg.message}</span>
-        </div>
-      )}
-    </div>
+    </motion.div>
   );
 };

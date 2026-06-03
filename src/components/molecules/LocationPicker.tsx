@@ -6,12 +6,13 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Navigation } from "lucide-react";
 
-// Fix missing marker icon issue in Leaflet with Webpack
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+// Create custom marker icon matching the theme
+const customMarkerIcon = L.divIcon({
+  className: "custom-map-marker",
+  html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#829E8D" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 32px; height: 32px; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.3));"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3" fill="white"></circle></svg>`,
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
 });
 
 interface LocationPickerProps {
@@ -49,6 +50,7 @@ function LocationMarker({ position, setPosition, readOnly }: LocationPickerProps
       eventHandlers={eventHandlers}
       position={position}
       ref={markerRef}
+      icon={customMarkerIcon}
     />
   );
 }
@@ -62,7 +64,16 @@ function MapUpdater({ position }: { position: { lat: number; lng: number } }) {
   return null;
 }
 
-export default function LocationPicker({ position, setPosition, error, readOnly }: LocationPickerProps & { error?: string }) {
+export default function LocationPicker({ 
+  position, 
+  setPosition, 
+  error, 
+  readOnly,
+  label,
+  helperText,
+  className = "",
+  height = "h-64"
+}: LocationPickerProps & { error?: string; label?: string; helperText?: string; className?: string; height?: string }) {
   const [loadingLoc, setLoadingLoc] = useState(false);
   
   // Default to Yogyakarta center if no position
@@ -89,25 +100,31 @@ export default function LocationPicker({ position, setPosition, error, readOnly 
   };
 
   return (
-    <div className="space-y-3 mb-4">
-      <div className="flex items-center justify-between">
-        <label className="block font-sans text-sm text-[#5A635E]">
-          {readOnly ? "Titik Koordinat Peta" : "Titik Koordinat Peta"}
-        </label>
-        {!readOnly && (
-          <button
-            type="button"
-            onClick={handleCurrentLocation}
-            disabled={loadingLoc}
-            className="flex items-center gap-1.5 text-xs font-semibold text-[#829E8D] hover:text-[#5A635E] transition-colors"
-          >
-            <Navigation size={14} className={loadingLoc ? "animate-pulse" : ""} />
-            {loadingLoc ? "Mencari..." : "Gunakan Lokasi Saat Ini"}
-          </button>
-        )}
-      </div>
+    <div className={`space-y-3 ${className}`}>
+      {/* Header section with optional label and location button */}
+      {(label || !readOnly) && (
+        <div className="flex items-center justify-between">
+          {label && (
+            <label className="block font-sans text-sm font-medium text-gray-700">
+              {label}
+            </label>
+          )}
+          {!readOnly && (
+            <button
+              type="button"
+              onClick={handleCurrentLocation}
+              disabled={loadingLoc}
+              className="flex items-center gap-1.5 text-xs font-semibold text-[#829E8D] hover:text-[#5A635E] transition-colors ml-auto"
+            >
+              <Navigation size={14} className={loadingLoc ? "animate-pulse" : ""} />
+              {loadingLoc ? "Mencari..." : "Gunakan Lokasi Saat Ini"}
+            </button>
+          )}
+        </div>
+      )}
 
-      <div className={`h-48 w-full rounded-sm overflow-hidden border relative z-0 ${error ? 'border-red-400' : 'border-[#E8D9D2]'}`}>
+      {/* Map Container */}
+      <div className={`${height} w-full rounded-none overflow-hidden border relative z-0 ${error ? 'border-red-400 focus-within:ring-1 focus-within:ring-red-400' : 'border-[#E8D9D2] focus-within:border-[#829E8D] focus-within:ring-1 focus-within:ring-[#829E8D]'} transition-all`}>
         <MapContainer
           center={position || defaultCenter}
           zoom={14}
@@ -122,9 +139,18 @@ export default function LocationPicker({ position, setPosition, error, readOnly 
           {position && <MapUpdater position={position} />}
         </MapContainer>
       </div>
-      {!readOnly && (
-        <p className="text-[10px] text-[#5A635E]/70 font-sans italic mt-1 leading-tight">
-          *Klik peta atau geser penanda (marker) untuk menentukan titik akurat pengiriman bunga Anda.
+      
+      {/* Footer / Helper Text */}
+      {helperText && !readOnly && (
+        <p className="text-[11px] text-gray-500 mt-1">
+          {helperText}
+        </p>
+      )}
+      
+      {/* Error Message */}
+      {error && (
+        <p className="block font-sans text-xs text-red-500 mt-1">
+          {error}
         </p>
       )}
     </div>

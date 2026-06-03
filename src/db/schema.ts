@@ -27,6 +27,7 @@ export const orders = pgTable("orders", {
   customerPhone: varchar("customer_phone", { length: 50 }).notNull(),
   customerAddress: text("customer_address"),
   customerNotes: text("customer_notes"),
+  deliveryMethod: varchar("delivery_method", { length: 50 }).notNull().default("delivery"),
   totalAmount: varchar("total_amount", { length: 255 }).notNull(),
   status: varchar("status", { length: 50 }).notNull().default("Menunggu Pembayaran"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

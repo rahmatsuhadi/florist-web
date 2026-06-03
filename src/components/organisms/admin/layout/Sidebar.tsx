@@ -11,6 +11,7 @@ import {
   Settings,
   LogOut,
   CreditCard,
+  Store,
 } from "lucide-react";
 import { logout } from "@/services/admin/authService";
 
@@ -21,10 +22,10 @@ export const Sidebar = () => {
   const menuItems = [
     { id: "overview", path: "/admin", label: "Overview", icon: LayoutDashboard },
     { id: "products", path: "/admin/products", label: "Katalog Produk", icon: Package },
-    { id: "storefront", path: "/admin/storefront", label: "Store Front", icon: ImageIcon },
+    { id: "storefront", path: "/admin/storefront", label: "Store Front", icon: Store },
+    { id: "content", path: "/admin/content", label: "Manajemen Konten", icon: ImageIcon },
     { id: "orders", path: "/admin/orders", label: "Transaksi", icon: Receipt },
     { id: "payments", path: "/admin/payments", label: "Riwayat Bayar", icon: CreditCard },
-    // { id: "settings", path: "/admin/settings", label: "Pengaturan", icon: Settings },
   ];
 
   const handleLogout = async () => {

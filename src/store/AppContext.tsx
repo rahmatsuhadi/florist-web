@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { createContext, useContext, useReducer, useState } from "react";
+import { createContext, useContext, useReducer, useState, useEffect } from "react";
 
 export interface VariantDetail {
   name: string;
@@ -33,6 +33,11 @@ type CartAction =
   | { type: "REMOVE_ITEM"; payload: { cartItemId: string } }
   | { type: "CLEAR_CART" };
 
+export interface CustomerInfo {
+  name: string;
+  phone: string;
+}
+
 export interface AppContextType {
   cart: CartItem[];
   cartTotal: number;
@@ -42,6 +47,8 @@ export interface AppContextType {
   setToast: (toast: { message: string } | null) => void;
   addToCart: (product: Omit<CartItem, "qty">) => void;
   dispatch: React.Dispatch<CartAction>;
+  customerInfo: CustomerInfo;
+  setCustomerInfo: (info: CustomerInfo) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -96,6 +103,27 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [cartState, dispatch] = useReducer(cartReducer, { items: [] });
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toast, setToast] = useState<{ message: string } | null>(null);
+  const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({ name: "", phone: "" });
+
+  // Load from localStorage if available (optional, but good for UX)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedInfo = localStorage.getItem("florist_customer_info");
+      if (savedInfo) {
+        try {
+          setCustomerInfo(JSON.parse(savedInfo));
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && (customerInfo.name || customerInfo.phone)) {
+      localStorage.setItem("florist_customer_info", JSON.stringify(customerInfo));
+    }
+  }, [customerInfo]);
 
   const addToCart = (product: Omit<CartItem, "qty">) => {
     dispatch({ type: "ADD_TO_CART", payload: product });
@@ -119,6 +147,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         toast,
         setToast,
         addToCart,
+        customerInfo,
+        setCustomerInfo,
       }}
     >
       {children}

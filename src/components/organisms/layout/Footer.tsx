@@ -4,9 +4,16 @@ import { MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "../../atoms/Logo";
 import type React from "react";
-import { SHOP_INFO } from "../../../constants/shopInfo";
+import { useShopStore } from "@/store/shopStore";
 
 export const Footer: React.FC = () => {
+  const shopName = useShopStore((s) => s.name);
+  const fullName = useShopStore((s) => s.fullName);
+  const address = useShopStore((s) => s.address);
+  const phone = useShopStore((s) => s.phone);
+  const instagram = useShopStore((s) => s.instagram);
+  const instagramUrl = instagram ? `https://instagram.com/${instagram.replace("@", "")}` : "#";
+
   return (
     <footer className="bg-[#2C302E] text-[#FAFAF7] pt-16 pb-8 border-t border-opacity-20 mt-20">
       <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
@@ -52,14 +59,14 @@ export const Footer: React.FC = () => {
           <h3 className="font-playfair text-xl mb-6">Contact</h3>
           <ul className="font-sans text-sm text-gray-400 space-y-3">
             <li className="flex items-center gap-3">
-              <MapPin size={16} /> {SHOP_INFO.address}
+              <MapPin size={16} /> {address}
             </li>
             <li className="flex items-center gap-3">
-              <Phone size={16} /> {SHOP_INFO.phone}
+              <Phone size={16} /> {phone}
             </li>
             <li className="flex items-center gap-3">
               <a
-                href={SHOP_INFO.instagramUrl}
+                href={instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 hover:text-white transition-colors"
@@ -81,14 +88,15 @@ export const Footer: React.FC = () => {
                   <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
                   <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
                 </svg>
-                <span>{SHOP_INFO.instagram}</span>
+                <span>{instagram}</span>
               </a>
             </li>
           </ul>
         </div>
       </div>
       <div className="text-center font-sans text-xs text-gray-500 border-t border-gray-700 pt-8">
-        &copy; {new Date().getFullYear()} {SHOP_INFO.fullName}. All rights
+        &copy; {new Date().getFullYear()} {fullName}. All rights
+
         reserved.
       </div>
     </footer>

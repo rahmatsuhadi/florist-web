@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { Logo } from "../../atoms/Logo";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { SHOP_INFO } from "../../../constants/shopInfo";
 import { useAppContext } from "../../../store/AppContext";
 
 export const Navbar: React.FC = () => {

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Lora, Playfair_Display, Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
-import { SHOP_INFO } from "../constants/shopInfo";
+import { getStoreSettings } from "@/services/admin/storefrontService";
+import { StoreInitializer } from "@/components/utilities/StoreInitializer";
 
 const lora = Lora({
   subsets: ["latin"],
@@ -21,55 +22,60 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: `${SHOP_INFO.fullName} | Rangkaian Bunga Premium Yogyakarta`,
-    template: `%s | ${SHOP_INFO.fullName}`,
-  },
-  description:
-    "Toko Bunga Premium Yogyakarta - Menghadirkan keindahan alam ke dalam buket bunga wisuda, pernikahan, anniversary, dan ucapan belasungkawa. Proses cepat, gratis pengiriman, dan pelayanan ramah.",
-  keywords: [
-    "toko bunga yogyakarta",
-    "florist jogja",
-    "buket bunga wisuda",
-    "bunga pernikahan jogja",
-    "hand bouquet premium",
-    "florist bantul",
-    "bunga papan yogyakarta",
-    "l fleur florist",
-    "l fleur mattz",
-  ],
-  authors: [{ name: "L'Fleur Mattz" }],
-  creator: "L'Fleur Mattz",
-  publisher: "L'Fleur Mattz",
-  robots: {
-    index: true,
-    follow: true,
-  },
-  openGraph: {
-    type: "website",
-    locale: "id_ID",
-    url: "https://lfleurmattz.com",
-    title: `${SHOP_INFO.fullName} | Rangkaian Bunga Premium Yogyakarta`,
-    description:
-      "Toko Bunga Premium Yogyakarta - Rangkaian bunga segar berkualitas tinggi untuk momen wisuda, pernikahan, anniversary, dan duka cita.",
-    siteName: SHOP_INFO.fullName,
-    images: [
-      {
-        url: "/images/hero/h1.webp",
-        width: 1200,
-        height: 630,
-        alt: SHOP_INFO.fullName,
-      },
-    ],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const storeSettings = await getStoreSettings();
 
-export default function RootLayout({
+  return {
+    title: {
+      default: `${storeSettings.fullName} | Rangkaian Bunga Premium Yogyakarta`,
+      template: `%s | ${storeSettings.fullName}`,
+    },
+    description:
+      "Toko Bunga Premium Yogyakarta - Menghadirkan keindahan alam ke dalam buket bunga wisuda, pernikahan, anniversary, dan ucapan belasungkawa. Proses cepat, gratis pengiriman, dan pelayanan ramah.",
+    keywords: [
+      "toko bunga yogyakarta",
+      "florist jogja",
+      "buket bunga wisuda",
+      "bunga pernikahan jogja",
+      "hand bouquet premium",
+      "florist bantul",
+      "bunga papan yogyakarta",
+      "l fleur florist",
+      "l fleur mattz",
+    ],
+    authors: [{ name: storeSettings.name }],
+    creator: storeSettings.name,
+    publisher: storeSettings.name,
+    robots: {
+      index: true,
+      follow: true,
+    },
+    openGraph: {
+      type: "website",
+      locale: "id_ID",
+      url: "https://florist-one.vercel.app",
+      title: `${storeSettings.fullName} | Rangkaian Bunga Premium Yogyakarta`,
+      description:
+        "Toko Bunga Premium Yogyakarta - Rangkaian bunga segar berkualitas tinggi untuk momen wisuda, pernikahan, anniversary, dan duka cita.",
+      siteName: storeSettings.fullName,
+      images: [
+        {
+          url: "/images/hero/h1.webp",
+          width: 1200,
+          height: 630,
+          alt: storeSettings.fullName,
+        },
+      ],
+    },
+  };
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const storeSettings = await getStoreSettings();
   return (
     <html
       lang="id"
@@ -79,8 +85,9 @@ export default function RootLayout({
         suppressHydrationWarning
         className="min-h-full flex flex-col font-sans selection:bg-[#E8D9D2] selection:text-[#2C302E]"
       >
+        <StoreInitializer initialData={storeSettings} />
         {children}
-        <Toaster 
+        <Toaster
           position="bottom-center"
           toastOptions={{
             unstyled: true,

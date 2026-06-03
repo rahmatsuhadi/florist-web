@@ -5,7 +5,7 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import { SHOP_INFO } from "../../../constants/shopInfo";
+import { useShopStore } from "@/store/shopStore";
 
 // Fix Leaflet default marker icon paths in next.js/react-leaflet
 const DefaultIcon = L.icon({
@@ -28,10 +28,15 @@ interface StoreMapProps {
 }
 
 export const StoreMap: React.FC<StoreMapProps> = ({
-  latitude = SHOP_INFO.latitude,
-  longitude = SHOP_INFO.longitude,
+  latitude,
+  longitude,
   zoom = 16,
 }) => {
+  const shopName = useShopStore((s) => s.fullName);
+  const shopAddress = useShopStore((s) => s.address);
+  const defaultLat = useShopStore((s) => s.latitude);
+  const defaultLng = useShopStore((s) => s.longitude);
+  
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -46,12 +51,15 @@ export const StoreMap: React.FC<StoreMapProps> = ({
     );
   }
 
-  const position: [number, number] = [latitude, longitude];
+  const finalLat = latitude ?? Number(defaultLat) ?? -7.9854932;
+  const finalLng = longitude ?? Number(defaultLng) ?? 110.2284877;
+  
+  const position: [number, number] = [finalLat, finalLng];
 
   return (
     <div className="w-full h-full min-h-[300px] border border-[#E8D9D2] relative z-0">
       <MapContainer
-        key={`${latitude}-${longitude}`}
+        key={`${finalLat}-${finalLng}`}
         center={position}
         zoom={zoom}
         scrollWheelZoom={false}
@@ -65,10 +73,10 @@ export const StoreMap: React.FC<StoreMapProps> = ({
           <Popup>
             <div className="p-1 text-center font-sans">
               <strong className="font-playfair text-[#2C302E] block mb-1">
-                {SHOP_INFO.fullName}
+                {shopName || "L'Fleur Mattz"}
               </strong>
               <p className="text-xs text-[#5A635E] leading-normal m-0">
-                {SHOP_INFO.address}
+                {shopAddress}
               </p>
             </div>
           </Popup>

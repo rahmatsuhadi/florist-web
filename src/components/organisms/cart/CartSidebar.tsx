@@ -5,7 +5,6 @@ import { Minus, Plus, ShoppingBag, X } from "lucide-react";
 import type React from "react";
 import Image from "next/image";
 import { useState } from "react";
-import { SHOP_INFO } from "../../../constants/shopInfo";
 import { useAppContext } from "../../../store/AppContext";
 import { formatIdr } from "../../../utils/format";
 import { Button } from "../../atoms/Button";

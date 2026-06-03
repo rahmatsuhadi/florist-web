@@ -1,5 +1,7 @@
+"use client";
+
 import type React from "react";
-import { SHOP_INFO } from "../../constants/shopInfo";
+import { useShopStore } from "@/store/shopStore";
 
 interface LogoProps {
   layout?: "horizontal" | "vertical";
@@ -17,7 +19,8 @@ export const Logo: React.FC<LogoProps> = ({
   subtitleClassName = "",
 }) => {
   const isVertical = layout === "vertical";
-  const [firstPart, ...restParts] = SHOP_INFO.name.split(" ");
+  const shopName = useShopStore((s) => s.name || "L'Fleur Mattz");
+  const [firstPart, ...restParts] = shopName.split(" ");
   const restText = restParts.join(" ");
 
   // Shared Emblem (SVG flower + monogram)

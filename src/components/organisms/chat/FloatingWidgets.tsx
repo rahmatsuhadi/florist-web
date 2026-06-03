@@ -15,18 +15,21 @@ import Image from "next/image";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { PRODUCTS } from "../../../constants/mockData";
-import { SHOP_INFO } from "../../../constants/shopInfo";
 import { type Message, sendMessageToGemini } from "../../../services/aiService";
 import { formatIdr } from "../../../utils/format";
+import { useShopStore } from "@/store/shopStore";
 
 export const FloatingWidgets: React.FC = () => {
   const router = useRouter();
+  const shopName = useShopStore((s) => s.name);
+  const shopPhoneWa = useShopStore((s) => s.phoneWa);
+  
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "model",
-      text: `Halo! Saya asisten AI ${SHOP_INFO.name}. ✨\nAda yang bisa saya bantu untuk menemukan rangkaian bunga yang sempurna untuk momen Anda?`,
+      text: `Halo! Saya asisten AI ${shopName || "L'Fleur Mattz"}. ✨\nAda yang bisa saya bantu untuk menemukan rangkaian bunga yang sempurna untuk momen Anda?`,
     },
   ]);
   const [input, setInput] = useState("");
@@ -40,7 +43,7 @@ export const FloatingWidgets: React.FC = () => {
 
   const handleWA = () => {
     window.open(
-      `https://wa.me/${SHOP_INFO.phoneWa}?text=Halo%20${encodeURIComponent(SHOP_INFO.name)},%20saya%20butuh%20bantuan%20customer%20service.`,
+      `https://wa.me/${shopPhoneWa}?text=Halo%20${encodeURIComponent(shopName || "L'Fleur Mattz")},%20saya%20butuh%20bantuan%20customer%20service.`,
       "_blank",
     );
   };
@@ -152,9 +155,15 @@ export const FloatingWidgets: React.FC = () => {
             {/* Header */}
             <div className="bg-[#829E8D] p-4 flex justify-between items-center text-white">
               <div className="flex items-center gap-2">
-                <Image src={"/images/bot.png"} width={40} height={40} alt="AI Assistant" className="rounded-full" />
+                <Image
+                  src={"/images/bot.png"}
+                  width={40}
+                  height={40}
+                  alt="AI Assistant"
+                  className="rounded-full"
+                />
                 <span className="font-playfair text-lg font-medium">
-                  {SHOP_INFO.name} AI Assistant
+                  {shopName || "L'Fleur Mattz"} AI Assistant
                 </span>
               </div>
               <button
@@ -249,10 +258,11 @@ export const FloatingWidgets: React.FC = () => {
         <button
           type="button"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className={`w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 cursor-pointer ${isMenuOpen
-            ? "bg-[#2C302E] text-white rotate-90"
-            : "bg-[#829E8D] text-white hover:bg-[#6c8575] hover:scale-105"
-            }`}
+          className={`w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 cursor-pointer ${
+            isMenuOpen
+              ? "bg-[#2C302E] text-white rotate-90"
+              : "bg-[#829E8D] text-white hover:bg-[#6c8575] hover:scale-105"
+          }`}
           aria-label="Toggle contact menu"
         >
           {isMenuOpen ? (

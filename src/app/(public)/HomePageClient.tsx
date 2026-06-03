@@ -9,7 +9,7 @@ import Image from "next/image";
 import { fadeInUp, staggerContainer } from "@/constants/animations";
 import { CATEGORIES, GALLERY_ITEMS, HERO_BANNERS } from "@/constants/mockData";
 import { Button } from "@/components/atoms/Button";
-import { SHOP_INFO } from "@/constants/shopInfo";
+import { useShopStore } from "@/store/shopStore";
 import CategoryCard from "@/components/molecules/category/CategoryCard";
 import ProductCard from "@/components/molecules/product/ProductCard";
 import { Product } from "@/services/admin/productService";
@@ -41,6 +41,11 @@ const SectionHeading = ({
 );
 
 export default function HomePageClient({ initialProducts }: { initialProducts: Product[] }) {
+  const shopName = useShopStore((s) => s.name);
+  const fullName = useShopStore((s) => s.fullName);
+  const address = useShopStore((s) => s.address);
+  const openingHours = useShopStore((s) => s.openingHours);
+
   const bestSellers = initialProducts.slice(0, 3);
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
@@ -124,7 +129,7 @@ export default function HomePageClient({ initialProducts }: { initialProducts: P
             transition={{ duration: 0.6 }}
             className="font-playfair text-3xl md:text-4xl mb-6 leading-snug"
           >
-            {SHOP_INFO.fullName}, sampaikan ucapan dengan mudah, cantik, dan
+            {fullName || "L'Fleur Mattz Florist"}, sampaikan ucapan dengan mudah, cantik, dan
             tepat waktu.
           </motion.h2>
           <motion.p
@@ -292,7 +297,7 @@ export default function HomePageClient({ initialProducts }: { initialProducts: P
               Kisah Kami
             </h2>
             <p className="font-sans text-[#5A635E] mb-6 leading-relaxed">
-              Berawal dari kecintaan terhadap keindahan alam, {SHOP_INFO.name}{" "}
+              Berawal dari kecintaan terhadap keindahan alam, {shopName}{" "}
               hadir untuk menerjemahkan perasaan melalui bahasa bunga. Setiap
               tangkai dipilih dengan standar kualitas tertinggi, dirangkai
               dengan penuh passion oleh florist bersertifikat kami.
@@ -317,7 +322,7 @@ export default function HomePageClient({ initialProducts }: { initialProducts: P
               <StoreMap />
             </div>
             <p className="font-sans text-[#5A635E] flex items-center gap-2">
-              <MapPin size={18} /> {SHOP_INFO.address} ({SHOP_INFO.openingHours}
+              <MapPin size={18} /> {address} ({openingHours}
               )
             </p>
           </motion.div>

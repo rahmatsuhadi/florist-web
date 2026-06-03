@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { storeSettings } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { SHOP_INFO } from "@/constants/shopInfo";
+import { unstable_cache } from "next/cache";
 
 export interface StoreSettingsData {
   id?: number;
@@ -18,29 +19,33 @@ export interface StoreSettingsData {
   longitude: string;
 }
 
-export async function getStoreSettings(): Promise<StoreSettingsData> {
-  try {
-    const settings = await db.query.storeSettings.findFirst();
-    if (!settings) {
-      // Return default from constants if nothing in DB yet
-      return {
-        name: SHOP_INFO.name,
-        fullName: SHOP_INFO.fullName,
-        phone: SHOP_INFO.phone,
-        phoneWa: SHOP_INFO.phoneWa,
-        instagram: SHOP_INFO.instagram,
-        address: SHOP_INFO.address,
-        openingHours: SHOP_INFO.openingHours,
-        latitude: String(SHOP_INFO.latitude),
-        longitude: String(SHOP_INFO.longitude),
-      };
+export const getStoreSettings = unstable_cache(
+  async (): Promise<StoreSettingsData> => {
+    try {
+      const settings = await db.query.storeSettings.findFirst();
+      if (!settings) {
+        // Return default from constants if nothing in DB yet
+        return {
+          name: SHOP_INFO.name,
+          fullName: SHOP_INFO.fullName,
+          phone: SHOP_INFO.phone,
+          phoneWa: SHOP_INFO.phoneWa,
+          instagram: SHOP_INFO.instagram,
+          address: SHOP_INFO.address,
+          openingHours: SHOP_INFO.openingHours,
+          latitude: String(SHOP_INFO.latitude),
+          longitude: String(SHOP_INFO.longitude),
+        };
+      }
+      return settings;
+    } catch (error) {
+      console.error("Failed to fetch store settings:", error);
+      throw new Error("Gagal mengambil data pengaturan toko.");
     }
-    return settings;
-  } catch (error) {
-    console.error("Failed to fetch store settings:", error);
-    throw new Error("Gagal mengambil data pengaturan toko.");
-  }
-}
+  },
+  ["store-settings"],
+  { tags: ["store-settings"], revalidate: 3600 }
+);
 
 export async function updateStoreSettings(data: StoreSettingsData): Promise<{ success: boolean; message: string }> {
   try {

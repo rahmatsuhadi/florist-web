@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { seoSettings } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getStoreSettings } from "./storefrontService";
+import { unstable_cache } from "next/cache";
 
 export interface SeoSettingsData {
   pageName: string;
@@ -12,17 +13,18 @@ export interface SeoSettingsData {
   keywords: string;
 }
 
-export async function getSeoSettings(pageName: string, resolveVariables: boolean = false): Promise<SeoSettingsData> {
-  try {
-    const settings = await db.query.seoSettings.findFirst({
-      where: eq(seoSettings.pageName, pageName)
-    });
+export const getSeoSettings = unstable_cache(
+  async (pageName: string, resolveVariables: boolean = false): Promise<SeoSettingsData> => {
+    try {
+      const settings = await db.query.seoSettings.findFirst({
+        where: eq(seoSettings.pageName, pageName)
+      });
 
-    const storeSettings = await getStoreSettings();
-    const storeName = storeSettings.name || "Florist";
-    const fullName = storeSettings.fullName || storeName;
+      const storeSettings = await getStoreSettings();
+      const storeName = storeSettings.name || "Florist";
+      const fullName = storeSettings.fullName || storeName;
 
-    let result: SeoSettingsData;
+      let result: SeoSettingsData;
 
     if (!settings) {
       // Dynamic Default SEO using variables
@@ -75,12 +77,15 @@ export async function getSeoSettings(pageName: string, resolveVariables: boolean
       result.keywords = replaceVars(result.keywords);
     }
 
-    return result;
-  } catch (error) {
-    console.error(`Failed to fetch SEO settings for ${pageName}:`, error);
-    throw new Error("Gagal mengambil data SEO.");
-  }
-}
+      return result;
+    } catch (error) {
+      console.error(`Failed to fetch SEO settings for ${pageName}:`, error);
+      throw new Error("Gagal mengambil data SEO.");
+    }
+  },
+  ["seo-settings"],
+  { tags: ["seo-settings"], revalidate: 3600 }
+);
 
 export async function updateSeoSettings(data: SeoSettingsData): Promise<{ success: boolean; message: string }> {
   try {

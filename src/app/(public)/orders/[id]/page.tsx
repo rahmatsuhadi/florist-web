@@ -3,10 +3,17 @@ import { getPublicOrderById } from "@/services/public/checkoutService";
 import Link from "next/link";
 import { OrderDetailClient } from "./OrderDetailClient";
 
-export const metadata: Metadata = {
-  title: "Detail Pesanan | L'Fleur",
-  description: "Rincian pesanan Anda",
-};
+import { getStoreSettings } from "@/services/admin/storefrontService";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const storeSettings = await getStoreSettings();
+  const storeName = storeSettings.name || "Florist";
+
+  return {
+    title: `Detail Pesanan | ${storeName}`,
+    description: "Rincian pesanan Anda",
+  };
+}
 
 export const dynamic = "force-dynamic";
 

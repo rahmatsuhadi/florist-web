@@ -22,27 +22,21 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+import { getSeoSettings } from "@/services/admin/seoService";
+
 export async function generateMetadata(): Promise<Metadata> {
-  const storeSettings = await getStoreSettings();
+  const [storeSettings, seoData] = await Promise.all([
+    getStoreSettings(),
+    getSeoSettings("home", true)
+  ]);
 
   return {
     title: {
-      default: `${storeSettings.fullName} | Rangkaian Bunga Premium Yogyakarta`,
+      default: seoData.title,
       template: `%s | ${storeSettings.fullName}`,
     },
-    description:
-      "Toko Bunga Premium Yogyakarta - Menghadirkan keindahan alam ke dalam buket bunga wisuda, pernikahan, anniversary, dan ucapan belasungkawa. Proses cepat, gratis pengiriman, dan pelayanan ramah.",
-    keywords: [
-      "toko bunga yogyakarta",
-      "florist jogja",
-      "buket bunga wisuda",
-      "bunga pernikahan jogja",
-      "hand bouquet premium",
-      "florist bantul",
-      "bunga papan yogyakarta",
-      "l fleur florist",
-      "l fleur mattz",
-    ],
+    description: seoData.description,
+    keywords: seoData.keywords ? seoData.keywords.split(",").map(k => k.trim()) : [],
     authors: [{ name: storeSettings.name }],
     creator: storeSettings.name,
     publisher: storeSettings.name,

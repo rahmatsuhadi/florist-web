@@ -8,6 +8,9 @@ import { useRouter } from "next/navigation";
 import { formatIdr } from "@/utils/format";
 import { OrderWithItems, updateOrderStatus } from "@/services/admin/orderService";
 import { VariantDetail } from "@/store/AppContext";
+import dynamic from "next/dynamic";
+
+const LocationPicker = dynamic(() => import("@/components/molecules/LocationPicker"), { ssr: false });
 
 export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems }) => {
   const router = useRouter();
@@ -15,6 +18,7 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
 
   const [status, setStatus] = useState(transaction.status);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [showMap, setShowMap] = useState(false);
   const cleanPhone = transaction.customerPhone.replace(/[^0-9]/g, "");
 
   const getWAMessage = () => {
@@ -167,6 +171,43 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
                     {/* @ts-ignore */}
                     {transaction.deliveryMethod === "pickup" ? "Pelanggan akan mengambil pesanan sendiri di toko (Pick Up)." : transaction.customerAddress}
                   </p>
+                  
+                  {/* @ts-ignore */}
+                  {transaction.deliveryMethod !== "pickup" && transaction.customerLatitude && transaction.customerLongitude && (
+                    <div className="mt-3 space-y-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          onClick={() => setShowMap(!showMap)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[11px] font-bold rounded-lg transition-all"
+                        >
+                          <MapPin size={12} /> {showMap ? "Tutup Peta" : "Lihat Peta Tersemat"}
+                        </button>
+                        <a
+                          // @ts-ignore
+                          href={`https://www.google.com/maps?q=${transaction.customerLatitude},${transaction.customerLongitude}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand/10 hover:bg-brand/20 text-brand text-[11px] font-bold rounded-lg transition-all"
+                        >
+                          <MapPin size={12} /> Buka di Google Maps
+                        </a>
+                      </div>
+
+                      {showMap && (
+                        <div className="mt-3 border border-gray-200 rounded-lg overflow-hidden relative z-0">
+                          <LocationPicker 
+                            position={{ 
+                              // @ts-ignore
+                              lat: Number(transaction.customerLatitude), 
+                              // @ts-ignore
+                              lng: Number(transaction.customerLongitude) 
+                            }} 
+                            readOnly={true} 
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 

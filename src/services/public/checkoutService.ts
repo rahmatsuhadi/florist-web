@@ -26,6 +26,8 @@ export interface CreateOrderData {
 
 import { snap } from "@/lib/midtrans";
 import { payments } from "@/db/schema";
+import { createNotification } from "@/services/admin/notificationService";
+import { formatIdr } from "@/utils/format";
 
 export async function createOrder(data: CreateOrderData) {
   try {
@@ -93,6 +95,18 @@ export async function createOrder(data: CreateOrderData) {
         .where(eq(payments.id, newPayment.id));
     } catch (midtransError) {
       console.error("Failed to generate Midtrans token:", midtransError);
+    }
+
+    // 6. Create Notification
+    try {
+      await createNotification({
+        title: "Pesanan Baru Masuk!",
+        message: `Pesanan baru ${newOrder.id} senilai ${formatIdr(Number(data.totalAmount))} dari ${data.customerName}.`,
+        type: "order",
+        link: `/admin/orders/${newOrder.id}`,
+      });
+    } catch (notifError) {
+      console.error("Failed to create new order notification:", notifError);
     }
 
     return {

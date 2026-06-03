@@ -5,102 +5,37 @@ import { Minus, Plus, ShoppingBag, X } from "lucide-react";
 import type React from "react";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAppContext } from "../../../store/AppContext";
 import { formatIdr } from "../../../utils/format";
 import { Button } from "../../atoms/Button";
 import { Input } from "../../atoms/Input";
-import { createOrder } from "../../../services/public/checkoutService";
-import dynamic from "next/dynamic";
-
-const LocationPicker = dynamic(() => import("../../molecules/LocationPicker"), { ssr: false });
 
 export const CartSidebar: React.FC = () => {
-  const { isCartOpen, setIsCartOpen, cart, cartTotal, dispatch, setToast } =
+  const { isCartOpen, setIsCartOpen, cart, cartTotal, dispatch, setToast, customerInfo, setCustomerInfo } =
     useAppContext();
-  const [checkoutData, setCheckoutData] = useState({
-    name: "",
-    phone: "",
-    address: "",
-    latitude: "",
-    longitude: "",
-  });
+  const router = useRouter();
   const [errors, setErrors] = useState({
     name: "",
     phone: "",
-    address: "",
-    location: "",
   });
-  const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "pickup">("delivery");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleCheckout = async () => {
+  const handleContinue = () => {
     const newErrors = {
-      name: checkoutData.name.trim() ? "" : "Nama lengkap wajib diisi.",
-      phone: checkoutData.phone.trim() ? "" : "Nomor WhatsApp wajib diisi.",
-      address:
-        deliveryMethod === "delivery" && !checkoutData.address.trim()
-          ? "Alamat pengiriman wajib diisi."
-          : "",
-      location:
-        deliveryMethod === "delivery" && (!checkoutData.latitude || !checkoutData.longitude)
-          ? "Titik lokasi peta wajib ditentukan."
-          : "",
+      name: customerInfo.name.trim() ? "" : "Nama lengkap wajib diisi.",
+      phone: customerInfo.phone.trim() ? "" : "Nomor WhatsApp wajib diisi.",
     };
 
     setErrors(newErrors);
 
-    if (newErrors.name || newErrors.phone || newErrors.address || newErrors.location) {
-      setToast({ message: "Mohon lengkapi data pengiriman." });
+    if (newErrors.name || newErrors.phone) {
+      setToast({ message: "Mohon lengkapi nama dan nomor WhatsApp." });
       setTimeout(() => setToast(null), 3000);
       return;
     }
 
-    setIsSubmitting(true);
-
-    try {
-      // Save order to database
-      const orderItemsData = cart.map((item) => ({
-        productId: Number(item.id),
-        productName: item.name,
-        productImage: item.image,
-        productPrice: item.price.toString(),
-        productCategory: item.category || "General",
-        quantity: item.qty,
-        variantDetails: item.variantDetails || [],
-        notes: item.notes,
-      }));
-
-      const res = await createOrder({
-        customerName: checkoutData.name,
-        customerPhone: checkoutData.phone,
-        customerAddress: deliveryMethod === "delivery" ? checkoutData.address : "",
-        customerLatitude: deliveryMethod === "delivery" && checkoutData.latitude ? checkoutData.latitude : undefined,
-        customerLongitude: deliveryMethod === "delivery" && checkoutData.longitude ? checkoutData.longitude : undefined,
-        deliveryMethod,
-        totalAmount: cartTotal.toString(),
-        items: orderItemsData,
-      });
-
-      if (!res.success) {
-        setToast({ message: "Gagal memproses pesanan, silakan coba lagi." });
-        setTimeout(() => setToast(null), 3000);
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Clear cart after checkout
-      dispatch({ type: 'CLEAR_CART' });
-      setIsCartOpen(false);
-
-      // Redirect to Order Detail Page
-      window.location.href = `/orders/${res.orderId}`;
-    } catch (error) {
-      console.error(error);
-      setToast({ message: "Terjadi kesalahan sistem." });
-      setTimeout(() => setToast(null), 3000);
-    } finally {
-      setIsSubmitting(false);
-    }
+    setIsCartOpen(false);
+    router.push("/checkout");
   };
 
   return (
@@ -245,23 +180,23 @@ export const CartSidebar: React.FC = () => {
                     </h3>
                     <Input
                       label="Nama Lengkap"
-                      value={checkoutData.name}
+                      value={customerInfo.name}
                       onChange={(e) => {
-                        setCheckoutData({
-                          ...checkoutData,
+                        setCustomerInfo({
+                          ...customerInfo,
                           name: e.target.value,
                         });
                         if (errors.name) setErrors({ ...errors, name: "" });
                       }}
-                      placeholder="Ulla..."
+                      placeholder="Nama lengkap..."
                       error={errors.name}
                     />
                     <Input
                       label="Nomor WhatsApp"
-                      value={checkoutData.phone}
+                      value={customerInfo.phone}
                       onChange={(e) => {
-                        setCheckoutData({
-                          ...checkoutData,
+                        setCustomerInfo({
+                          ...customerInfo,
                           phone: e.target.value,
                         });
                         if (errors.phone) setErrors({ ...errors, phone: "" });
@@ -270,86 +205,6 @@ export const CartSidebar: React.FC = () => {
                       type="tel"
                       error={errors.phone}
                     />
-
-                    <div className="mb-4">
-                      <label className="block font-sans text-sm text-[#5A635E] mb-2">
-                        Metode Pengiriman
-                      </label>
-                      <div className="flex bg-[#FAFAF7] rounded-lg p-1 border border-[#E8D9D2]">
-                        <button
-                          type="button"
-                          onClick={() => setDeliveryMethod("delivery")}
-                          className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
-                            deliveryMethod === "delivery"
-                              ? "bg-white shadow-sm text-[#2C302E] border border-gray-100"
-                              : "text-gray-400 hover:text-gray-600"
-                          }`}
-                        >
-                          Kirim
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeliveryMethod("pickup")}
-                          className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
-                            deliveryMethod === "pickup"
-                              ? "bg-white shadow-sm text-[#2C302E] border border-gray-100"
-                              : "text-gray-400 hover:text-gray-600"
-                          }`}
-                        >
-                          Ambil Sendiri
-                        </button>
-                      </div>
-                    </div>
-
-                    {deliveryMethod === "delivery" && (
-                      <div className="mb-4">
-                        <label
-                          htmlFor="address-textarea"
-                          className="block font-sans text-sm text-[#5A635E] mb-2"
-                        >
-                          Alamat Pengiriman
-                        </label>
-                        <textarea
-                          id="address-textarea"
-                          className={`w-full border-b border-[#E8D9D2] bg-transparent py-2 px-1 focus:outline-none focus:border-[#829E8D] transition-colors font-sans text-[#2C302E] resize-none ${errors.address
-                            ? "border-red-400 focus:border-red-400"
-                            : ""
-                            }`}
-                          rows={3}
-                          placeholder="Jl. Mawar No. 1..."
-                          value={checkoutData.address}
-                          onChange={(e) => {
-                            setCheckoutData({
-                              ...checkoutData,
-                              address: e.target.value,
-                            });
-                            if (errors.address)
-                              setErrors({ ...errors, address: "" });
-                          }}
-                        />
-                        {errors.address && (
-                          <span className="block font-sans text-xs text-red-500 mt-1">
-                            {errors.address}
-                          </span>
-                        )}
-
-                        <div className="mt-4 pt-4 border-t border-[#E8D9D2]">
-                          <LocationPicker 
-                            position={checkoutData.latitude && checkoutData.longitude ? { lat: Number(checkoutData.latitude), lng: Number(checkoutData.longitude) } : null}
-                            setPosition={(pos) => {
-                              setCheckoutData({ ...checkoutData, latitude: pos ? pos.lat.toString() : "", longitude: pos ? pos.lng.toString() : "" });
-                              if (errors.location) setErrors({ ...errors, location: "" });
-                            }}
-                            error={errors.location}
-                          />
-                          {errors.location && (
-                            <span className="block font-sans text-xs text-red-500 mt-1">
-                              {errors.location}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               )}
@@ -359,11 +214,10 @@ export const CartSidebar: React.FC = () => {
             {cart.length > 0 && (
               <div className="p-6 bg-[#FAFAF7] border-t border-[#E8D9D2]">
                 <Button
-                  className={`w-full bg-[#25D366] hover:bg-[#128C7E] border-0 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
-                  onClick={handleCheckout}
-                  disabled={isSubmitting}
+                  className={`w-full bg-[#2C302E] hover:bg-[#1A1C1B] border-0 text-white`}
+                  onClick={handleContinue}
                 >
-                  {isSubmitting ? 'Memproses...' : 'Checkout via WhatsApp'}
+                  Lanjut ke Checkout
                 </Button>
               </div>
             )}

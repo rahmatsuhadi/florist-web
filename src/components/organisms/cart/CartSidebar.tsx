@@ -10,6 +10,9 @@ import { formatIdr } from "../../../utils/format";
 import { Button } from "../../atoms/Button";
 import { Input } from "../../atoms/Input";
 import { createOrder } from "../../../services/public/checkoutService";
+import dynamic from "next/dynamic";
+
+const LocationPicker = dynamic(() => import("../../molecules/LocationPicker"), { ssr: false });
 
 export const CartSidebar: React.FC = () => {
   const { isCartOpen, setIsCartOpen, cart, cartTotal, dispatch, setToast } =
@@ -18,11 +21,14 @@ export const CartSidebar: React.FC = () => {
     name: "",
     phone: "",
     address: "",
+    latitude: "",
+    longitude: "",
   });
   const [errors, setErrors] = useState({
     name: "",
     phone: "",
     address: "",
+    location: "",
   });
   const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "pickup">("delivery");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,11 +41,15 @@ export const CartSidebar: React.FC = () => {
         deliveryMethod === "delivery" && !checkoutData.address.trim()
           ? "Alamat pengiriman wajib diisi."
           : "",
+      location:
+        deliveryMethod === "delivery" && (!checkoutData.latitude || !checkoutData.longitude)
+          ? "Titik lokasi peta wajib ditentukan."
+          : "",
     };
 
     setErrors(newErrors);
 
-    if (newErrors.name || newErrors.phone || newErrors.address) {
+    if (newErrors.name || newErrors.phone || newErrors.address || newErrors.location) {
       setToast({ message: "Mohon lengkapi data pengiriman." });
       setTimeout(() => setToast(null), 3000);
       return;
@@ -64,6 +74,8 @@ export const CartSidebar: React.FC = () => {
         customerName: checkoutData.name,
         customerPhone: checkoutData.phone,
         customerAddress: deliveryMethod === "delivery" ? checkoutData.address : "",
+        customerLatitude: deliveryMethod === "delivery" && checkoutData.latitude ? checkoutData.latitude : undefined,
+        customerLongitude: deliveryMethod === "delivery" && checkoutData.longitude ? checkoutData.longitude : undefined,
         deliveryMethod,
         totalAmount: cartTotal.toString(),
         items: orderItemsData,
@@ -320,6 +332,22 @@ export const CartSidebar: React.FC = () => {
                             {errors.address}
                           </span>
                         )}
+
+                        <div className="mt-4 pt-4 border-t border-[#E8D9D2]">
+                          <LocationPicker 
+                            position={checkoutData.latitude && checkoutData.longitude ? { lat: Number(checkoutData.latitude), lng: Number(checkoutData.longitude) } : null}
+                            setPosition={(pos) => {
+                              setCheckoutData({ ...checkoutData, latitude: pos ? pos.lat.toString() : "", longitude: pos ? pos.lng.toString() : "" });
+                              if (errors.location) setErrors({ ...errors, location: "" });
+                            }}
+                            error={errors.location}
+                          />
+                          {errors.location && (
+                            <span className="block font-sans text-xs text-red-500 mt-1">
+                              {errors.location}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>

@@ -1,5 +1,6 @@
 import React from "react";
 import { Sidebar } from "@/components/organisms/admin/layout/Sidebar";
+import { Header } from "@/components/organisms/admin/layout/Header";
 
 export default function AdminLayout({
   children,
@@ -12,8 +13,9 @@ export default function AdminLayout({
       <Sidebar />
 
       {/* Main Content Area */}
-      <main className="pl-64 min-h-screen">
-        <div className="p-8 max-w-7xl mx-auto">{children}</div>
+      <main className="pl-64 min-h-screen flex flex-col">
+        <Header />
+        <div className="flex-1 p-8 max-w-7xl w-full mx-auto">{children}</div>
       </main>
     </div>
   );

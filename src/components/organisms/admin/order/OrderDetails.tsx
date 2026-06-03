@@ -35,6 +35,10 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
       return encodeURIComponent(
         `${baseGreeting}Pesanan mawar/bunga indah Anda *${transaction.id}* saat ini sudah diserahkan ke kurir dan sedang dalam perjalanan menuju alamat tujuan.\n\nSemoga bunga sampai dengan aman dan segar bugar!`
       );
+    } else if (status === "Siap Diambil") {
+      return encodeURIComponent(
+        `${baseGreeting}Kabar baik! Pesanan Anda *${transaction.id}* sudah selesai dirangkai dan siap untuk diambil di toko kami. Ditunggu kedatangannya ya! 🌸`
+      );
     } else if (status === "Selesai") {
       return encodeURIComponent(
         `${baseGreeting}Pesanan Anda *${transaction.id}* berisikan *${transaction.items.length > 0 ? transaction.items[0].productName : "bunga"}* telah berhasil dikirimkan ke alamat tujuan dengan selamat. 🌸\n\nSemoga rangkaian kami dapat memperindah momen istimewa Anda hari ini. Jika berkenan, silakan bagikan kepuasan Anda bersama kami di Instagram!`
@@ -155,8 +159,14 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
               <div className="flex items-start gap-3">
                 <div className="p-2 bg-brand-light text-brand rounded-lg mt-0.5"><MapPin size={16} /></div>
                 <div>
-                  <h5 className="font-semibold text-gray-900 text-sm">Alamat Pengiriman</h5>
-                  <p className="text-xs text-gray-500 mt-1 leading-relaxed font-sans">{transaction.customerAddress}</p>
+                  <h5 className="font-semibold text-gray-900 text-sm">
+                    {/* @ts-ignore - db schema updated */}
+                    {transaction.deliveryMethod === "pickup" ? "Metode Pengambilan" : "Alamat Pengiriman"}
+                  </h5>
+                  <p className="text-xs text-gray-500 mt-1 leading-relaxed font-sans">
+                    {/* @ts-ignore */}
+                    {transaction.deliveryMethod === "pickup" ? "Pelanggan akan mengambil pesanan sendiri di toko (Pick Up)." : transaction.customerAddress}
+                  </p>
                 </div>
               </div>
 
@@ -207,19 +217,32 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
                   {isUpdating && <Loader2 size={12} className="inline animate-spin ml-2 text-brand" />}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
-                  {["Menunggu Pembayaran", "Sudah Dibayar", "Sedang Diproses", "Sedang Dikirim", "Selesai", "Dibatalkan"].map((st) => (
-                    <button
-                      key={st}
-                      onClick={() => handleStatusChange(st)}
-                      disabled={isUpdating}
-                      className={`py-2 px-3 rounded-xl border font-semibold text-xs transition-all ${status === st
-                        ? 'bg-brand text-white border-brand'
-                        : 'border-gray-200 text-gray-500 hover:bg-gray-50'
-                        } ${isUpdating ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                      {st}
-                    </button>
-                  ))}
+                  {(() => {
+                    // @ts-ignore
+                    const isPickup = transaction.deliveryMethod === "pickup";
+                    let available = [status];
+                    if (status === "Menunggu Pembayaran") available = ["Menunggu Pembayaran", "Sudah Dibayar", "Dibatalkan"];
+                    else if (status === "Sudah Dibayar") available = ["Sudah Dibayar", "Sedang Diproses", "Dibatalkan"];
+                    else if (status === "Sedang Diproses") available = ["Sedang Diproses", isPickup ? "Siap Diambil" : "Sedang Dikirim", "Dibatalkan"];
+                    else if (status === "Sedang Dikirim") available = ["Sedang Dikirim", "Selesai", "Dibatalkan"];
+                    else if (status === "Siap Diambil") available = ["Siap Diambil", "Selesai", "Dibatalkan"];
+                    else if (status === "Selesai") available = ["Selesai"];
+                    else if (status === "Dibatalkan") available = ["Dibatalkan"];
+
+                    return available.map((st) => (
+                      <button
+                        key={st}
+                        onClick={() => handleStatusChange(st)}
+                        disabled={isUpdating || status === st}
+                        className={`py-2 px-3 rounded-xl border font-semibold text-xs transition-all ${status === st
+                          ? 'bg-brand text-white border-brand cursor-default'
+                          : 'border-gray-200 text-gray-500 hover:bg-gray-50'
+                          } ${isUpdating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        {st}
+                      </button>
+                    ));
+                  })()}
                 </div>
               </div>
             </div>

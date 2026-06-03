@@ -119,7 +119,15 @@ export const OrderList = ({ initialOrders }: { initialOrders: OrderWithItems[] }
                   <TableCell className="font-bold text-brand">{trx.id}</TableCell>
                   <TableCell>
                       <p className="font-semibold text-gray-900">{trx.customerName}</p>
-                      <p className="text-xs text-gray-400">{trx.customerPhone}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-xs text-gray-400">{trx.customerPhone}</span>
+                        {/* @ts-ignore - DB schema added deliveryMethod */}
+                        {trx.deliveryMethod === "pickup" ? (
+                          <span className="bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-[4px] text-[10px] font-bold tracking-wide">PICK UP</span>
+                        ) : (
+                          <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-[4px] text-[10px] font-bold tracking-wide">KIRIM</span>
+                        )}
+                      </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">

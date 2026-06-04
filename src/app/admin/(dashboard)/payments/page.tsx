@@ -10,7 +10,6 @@ export const metadata: Metadata = {
   description: "Riwayat pelunasan kas dan mutasi transaksi",
 };
 
-export const dynamic = "force-dynamic";
 
 export default async function AdminPaymentsPage({
   searchParams,

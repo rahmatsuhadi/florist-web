@@ -1,5 +1,4 @@
 import { MapPin } from "lucide-react";
-import dynamic from "next/dynamic";
 import { FadeInUpWrapper } from "@/components/ui/MotionWrappers";
 import { StoreSettingsData } from "@/services/admin/storefrontService";
 

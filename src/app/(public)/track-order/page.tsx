@@ -17,7 +17,6 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export const dynamic = 'force-dynamic';
 
 interface PageProps {
   searchParams: Promise<{ phone?: string }>;

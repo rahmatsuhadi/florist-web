@@ -8,7 +8,6 @@ export const metadata: Metadata = {
   description: "Rincian pesanan dari pelanggan",
 };
 
-export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: { id: string };

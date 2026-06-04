@@ -7,7 +7,6 @@ export const metadata: Metadata = {
   description: "Manajemen identitas, kontak, dan alamat toko.",
 };
 
-export const dynamic = "force-dynamic";
 
 export default async function AdminStorefrontPage() {
   const initialData = await getStoreSettings();

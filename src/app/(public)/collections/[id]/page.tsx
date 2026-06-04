@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { ProductList } from "@/components/organisms/product/ProductList";
+import { ProductList } from "@/components/features/product/organisms/ProductList";
 import { CATEGORIES } from "@/constants/mockData";
 import { getProducts } from "@/services/admin/productService";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 interface CategoryPageProps {
   params: Promise<{ id: string }>;
@@ -50,9 +51,16 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   if (!category) {
     return (
-      <div className="pt-40 text-center font-sans text-lg text-[#2C302E]">
-        Kategori tidak ditemukan.
-      </div>
+      <EmptyState
+        title="Kategori Tidak Ditemukan"
+        message="Maaf, kategori yang Anda cari tidak tersedia atau mungkin telah dihapus."
+        fullPage={true}
+        action={
+          <Link href="/collections" className="text-[#829E8D] hover:underline font-sans">
+            Lihat Semua Kategori
+          </Link>
+        }
+      />
     );
   }
 
@@ -78,9 +86,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         {categoryProducts.length > 0 ? (
           <ProductList products={categoryProducts} />
         ) : (
-          <div className="text-center py-20 text-[#5A635E] font-sans">
-            Belum ada produk untuk kategori ini.
-          </div>
+          <EmptyState
+            title="Belum Ada Produk"
+            message="Saat ini belum ada produk yang tersedia untuk kategori ini. Silakan periksa kembali nanti."
+          />
         )}
       </div>
     </div>

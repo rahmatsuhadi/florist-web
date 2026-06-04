@@ -1,4 +1,4 @@
-import { SeoManager } from "@/components/organisms/admin/seo/SeoManager";
+import { SeoManager } from "@/components/features/admin/seo/organisms/seo/SeoManager";
 
 export const metadata = {
   title: "SEO Manager | Admin",

@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { CheckoutForm } from "@/components/organisms/checkout/CheckoutForm";
+import { CheckoutForm } from "@/components/features/checkout/organisms/CheckoutForm";
 
 export const metadata: Metadata = {
   title: "Checkout | Magnolia Florist",

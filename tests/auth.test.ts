@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { encrypt, decrypt } from '@/lib/auth';
-import { login, logout } from '@/services/admin/authService';
+import { login, logout, LoginActionState } from '@/services/admin/authService';
 import bcrypt from 'bcryptjs';
 
 // Mock the environment variable
@@ -14,6 +14,10 @@ vi.mock('next/headers', () => ({
     set: mockSet,
     delete: mockDelete,
   })),
+}));
+
+vi.mock('next/navigation', () => ({
+  redirect: vi.fn(),
 }));
 
 describe('Auth Utilities', () => {
@@ -34,21 +38,32 @@ describe('Auth Utilities', () => {
 });
 
 describe('Auth Service (Login/Logout)', () => {
+  const initialState: LoginActionState = { success: false };
+
+  const createFormData = (email: string, password: string) => {
+    const fd = new FormData();
+    fd.append('email', email);
+    fd.append('password', password);
+    return fd;
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('should reject invalid email', async () => {
-    const result = await login('wrong@email.com', 'admin123');
+    const fd = createFormData('wrong@email.com', 'admin123');
+    const result = await login(initialState, fd);
     expect(result.success).toBe(false);
-    expect(result.error).toBe('Invalid credentials');
+    expect(result.message).toBe('Email atau password salah');
     expect(mockSet).not.toHaveBeenCalled();
   });
 
   it('should reject invalid password', async () => {
-    const result = await login('admin@fleuriste.com', 'wrongpassword');
+    const fd = createFormData('admin@fleuriste.com', 'wrongpassword');
+    const result = await login(initialState, fd);
     expect(result.success).toBe(false);
-    expect(result.error).toBe('Invalid credentials');
+    expect(result.message).toBe('Email atau password salah');
     expect(mockSet).not.toHaveBeenCalled();
   });
 
@@ -57,13 +72,11 @@ describe('Auth Service (Login/Logout)', () => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash('admin123', salt);
 
-    // We don't really need to mock bcrypt.compare since we're providing the correct password
-    // But since the actual file has a hardcoded hash, "admin123" will match it natively!
-    const result = await login('admin@fleuriste.com', 'admin123');
-
-    expect(result.success).toBe(true);
-    expect(result.user?.id).toBe('1');
-    expect(result.user?.role).toBe('Superadmin');
+    const fd = createFormData('admin@fleuriste.com', 'admin123');
+    const result = await login(initialState, fd);
+    
+    // redirect is called so the function will not return {success: true, user: ...} anymore
+    // but we can check if cookie was set
     expect(mockSet).toHaveBeenCalledWith(
       'admin_session',
       expect.any(String),

@@ -29,6 +29,10 @@ export interface Product {
 }
 
 export const getProducts = async (params?: { query?: string; category?: string }): Promise<Product[]> => {
+  if (!db) {
+    return []; // Return empty during build, real data at runtime
+  }
+
   const conditions: SQL[] = [];
   
   if (params?.category && params.category !== "Semua") {

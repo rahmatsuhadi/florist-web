@@ -1,4 +1,4 @@
-import { OrderDetails } from "@/components/organisms/admin/order/OrderDetails";
+import { OrderDetails } from "@/components/features/admin/order/organisms/order/OrderDetails";
 import { Metadata } from "next";
 import { getOrderById } from "@/services/admin/orderService";
 import Link from "next/link";

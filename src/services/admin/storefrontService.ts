@@ -22,6 +22,21 @@ export interface StoreSettingsData {
 export const getStoreSettings = unstable_cache(
   async (): Promise<StoreSettingsData> => {
     try {
+      // If db not available (build-time), return defaults
+      if (!db) {
+        return {
+          name: SHOP_INFO.name,
+          fullName: SHOP_INFO.fullName,
+          phone: SHOP_INFO.phone,
+          phoneWa: SHOP_INFO.phoneWa,
+          instagram: SHOP_INFO.instagram,
+          address: SHOP_INFO.address,
+          openingHours: SHOP_INFO.openingHours,
+          latitude: String(SHOP_INFO.latitude),
+          longitude: String(SHOP_INFO.longitude),
+        };
+      }
+
       const settings = await db.query.storeSettings.findFirst();
       if (!settings) {
         // Return default from constants if nothing in DB yet
@@ -40,7 +55,18 @@ export const getStoreSettings = unstable_cache(
       return settings;
     } catch (error) {
       console.error("Failed to fetch store settings:", error);
-      throw new Error("Gagal mengambil data pengaturan toko.");
+      // Return defaults on error instead of throwing
+      return {
+        name: SHOP_INFO.name,
+        fullName: SHOP_INFO.fullName,
+        phone: SHOP_INFO.phone,
+        phoneWa: SHOP_INFO.phoneWa,
+        instagram: SHOP_INFO.instagram,
+        address: SHOP_INFO.address,
+        openingHours: SHOP_INFO.openingHours,
+        latitude: String(SHOP_INFO.latitude),
+        longitude: String(SHOP_INFO.longitude),
+      };
     }
   },
   ["store-settings"],

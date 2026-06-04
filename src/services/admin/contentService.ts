@@ -28,12 +28,21 @@ export interface GalleryItemData {
 
 export async function getHeroBanners(): Promise<HeroBannerData[]> {
   try {
+    if (!db) {
+      return HERO_BANNERS.map((b, i) => ({
+        imageUrl: b.image,
+        title: b.title,
+        subtitle: b.subtitle,
+        position: i,
+        isActive: true,
+      }));
+    }
+
     const banners = await db.query.heroBanners.findMany({
       orderBy: [asc(heroBanners.position)],
     });
 
     if (banners.length === 0) {
-      // Seed the database with mock data
       const initialBanners = HERO_BANNERS.map((b, i) => ({
         imageUrl: b.image,
         title: b.title,
@@ -52,7 +61,13 @@ export async function getHeroBanners(): Promise<HeroBannerData[]> {
     return banners;
   } catch (error) {
     console.error("Failed to fetch hero banners:", error);
-    return [];
+    return HERO_BANNERS.map((b, i) => ({
+      imageUrl: b.image,
+      title: b.title,
+      subtitle: b.subtitle,
+      position: i,
+      isActive: true,
+    }));
   }
 }
 
@@ -110,6 +125,16 @@ export async function deleteHeroBanner(id: number): Promise<{ success: boolean; 
 
 export async function getGalleryItems(): Promise<GalleryItemData[]> {
   try {
+    if (!db) {
+      return GALLERY_ITEMS.map((g, i) => ({
+        imageUrl: g.image,
+        gridClass: g.gridClass,
+        altText: g.alt,
+        position: i,
+        isActive: true,
+      }));
+    }
+
     const gallery = await db.query.galleryItems.findMany({
       orderBy: [asc(galleryItems.position)],
     });
@@ -133,7 +158,13 @@ export async function getGalleryItems(): Promise<GalleryItemData[]> {
     return gallery;
   } catch (error) {
     console.error("Failed to fetch gallery:", error);
-    return [];
+    return GALLERY_ITEMS.map((g, i) => ({
+      imageUrl: g.image,
+      gridClass: g.gridClass,
+      altText: g.alt,
+      position: i,
+      isActive: true,
+    }));
   }
 }
 

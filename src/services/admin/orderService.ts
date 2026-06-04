@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { orders, orderItems } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, or, ilike, gte, lte, inArray, SQL } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { payments } from "@/db/schema";
 
@@ -15,24 +15,76 @@ export type OrderWithItems = OrderType & {
   payments?: PaymentType[];
 };
 
-export async function getOrders(): Promise<OrderWithItems[]> {
+export interface OrderFilterParams {
+  q?: string;
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  limit?: number;
+}
+
+export async function getOrders(params?: OrderFilterParams): Promise<{ data: OrderWithItems[], total: number }> {
   try {
-    const allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt));
-    const allItems = await db.select().from(orderItems);
+    const filters: SQL[] = [];
+
+    if (params?.q) {
+      const searchPattern = `%${params.q}%`;
+      filters.push(
+        or(
+          ilike(orders.id, searchPattern),
+          ilike(orders.customerName, searchPattern),
+          ilike(orders.customerPhone, searchPattern)
+        )!
+      );
+    }
+
+    if (params?.status && params.status !== "Semua Status") {
+      filters.push(eq(orders.status, params.status));
+    }
+
+    if (params?.startDate) {
+      // scheduledDate format is assumed to be ISO string YYYY-MM-DD
+      filters.push(gte(orders.scheduledDate, params.startDate));
+    }
+
+    if (params?.endDate) {
+      filters.push(lte(orders.scheduledDate, params.endDate));
+    }
+
+    const whereClause = filters.length > 0 ? and(...filters) : undefined;
+
+    const allMatchedOrders = await db.select().from(orders).where(whereClause).orderBy(desc(orders.createdAt));
+    const total = allMatchedOrders.length;
+    
+    if (total === 0) {
+      return { data: [], total: 0 };
+    }
+
+    const page = params?.page || 1;
+    const limit = params?.limit || 10;
+    const safePage = Math.max(1, Math.min(page, Math.max(1, Math.ceil(total / limit))));
+    
+    const paginatedOrders = allMatchedOrders.slice((safePage - 1) * limit, safePage * limit);
+    const orderIds = paginatedOrders.map(o => o.id);
+
+    const items = await db.select().from(orderItems).where(inArray(orderItems.orderId, orderIds));
 
     // Group items by orderId
     const itemsByOrderId: Record<string, OrderItemType[]> = {};
-    for (const item of allItems) {
+    for (const item of items) {
       if (!itemsByOrderId[item.orderId]) {
         itemsByOrderId[item.orderId] = [];
       }
       itemsByOrderId[item.orderId].push(item);
     }
 
-    return allOrders.map(order => ({
+    const data = paginatedOrders.map(order => ({
       ...order,
       items: itemsByOrderId[order.id] || []
     }));
+
+    return { data, total };
   } catch (error) {
     console.error("Error fetching orders:", error);
     throw new Error("Gagal mengambil data pesanan");

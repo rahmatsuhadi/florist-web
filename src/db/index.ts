@@ -4,18 +4,26 @@ import * as schema from "./schema";
 
 const connectionString = process.env.DATABASE_URL;
 
-if (!connectionString) {
-  throw new Error("DATABASE_URL is missing in environment variables");
-}
-
 declare global {
   var postgresClient: postgres.Sql | undefined;
 }
 
-// Disable prefetch as it is not supported for "Transaction" pool mode
-export const client = globalThis.postgresClient || postgres(connectionString, { prepare: false });
-if (process.env.NODE_ENV !== "production") {
-  globalThis.postgresClient = client;
+type DbType = ReturnType<typeof drizzle<typeof schema>>;
+
+let client: postgres.Sql | undefined;
+let dbInstance: DbType | null;
+
+if (connectionString) {
+  client = globalThis.postgresClient || postgres(connectionString, { prepare: false });
+  if (process.env.NODE_ENV !== "production") {
+    globalThis.postgresClient = client;
+  }
+  dbInstance = drizzle(client, { schema });
+} else {
+  client = undefined;
+  dbInstance = null;
 }
 
-export const db = drizzle(client, { schema });
+// Export as non-null for backward compatibility (services will handle null at runtime)
+export const db = dbInstance as DbType;
+export { client };

@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { products } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, ilike, and, SQL } from "drizzle-orm";
 
 export interface ProductVariantOption {
   id: string;
@@ -28,10 +28,25 @@ export interface Product {
   variantGroups: ProductVariantGroup[];
 }
 
-export const getProducts = async (): Promise<Product[]> => {
+export const getProducts = async (params?: { query?: string; category?: string }): Promise<Product[]> => {
+  if (!db) {
+    return []; // Return empty during build, real data at runtime
+  }
+
+  const conditions: SQL[] = [];
+  
+  if (params?.category && params.category !== "Semua") {
+    conditions.push(eq(products.category, params.category));
+  }
+  
+  if (params?.query) {
+    conditions.push(ilike(products.name, `%${params.query}%`));
+  }
+
   const allProducts = await db
     .select()
     .from(products)
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
     .orderBy(desc(products.createdAt));
 
   return allProducts.map(p => ({

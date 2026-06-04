@@ -1,6 +1,20 @@
 import React from "react";
-import { Sidebar } from "@/components/organisms/admin/layout/Sidebar";
-import { Header } from "@/components/organisms/admin/layout/Header";
+import { Sidebar } from "@/components/features/admin/core/organisms/layout/Sidebar";
+import { Header } from "@/components/features/admin/core/organisms/layout/Header";
+import { Metadata } from "next";
+import { getStoreSettings } from "@/services/admin/storefrontService";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const storeSettings = await getStoreSettings();
+  const storeName = storeSettings.name || "Fleuriste";
+  return {
+    title: {
+      template: `%s | Admin ${storeName}`,
+      default: `Admin Dashboard | ${storeName}`,
+    },
+    description: `Workspace admin untuk ${storeName}`,
+  };
+}
 
 export default function AdminLayout({
   children,
@@ -8,7 +22,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#FDFBF7] font-inter text-[#2D3748]">
+    <div className="min-h-screen bg-[#FDFBF7] font-inter text-[#2D3748] ">
       {/* Sidebar Component */}
       <Sidebar />
 

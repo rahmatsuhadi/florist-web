@@ -1,8 +1,10 @@
-"use client";
+import { ProductForm } from "@/components/features/admin/product/organisms/product/ProductForm";
+import { Metadata } from "next";
 
-import { ProductForm } from "@/components/organisms/admin/product/ProductForm";
-import { createProduct } from "@/services/admin/productService";
+export const metadata: Metadata = {
+  title: "Produk Baru",
+};
 
 export default function AddProductPage() {
-  return <ProductForm onSave={createProduct} />;
+  return <ProductForm />;
 }

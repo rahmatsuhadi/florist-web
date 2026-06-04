@@ -11,7 +11,7 @@
   --font-serif: var(--font-playfair-display);
   --font-sans: var(--font-lora);
   --font-inter: var(--font-inter);
-  
+
   /* Brand Theme Colors */
   --color-brand: #4A5D4E;
   --color-brand-hover: #3d4d40;
@@ -31,8 +31,7 @@ body {
 }
 
 .leaflet-tile {
-  filter: grayscale(100%) sepia(8%) hue-rotate(60deg) brightness(97%)
-    contrast(97%);
+  filter: grayscale(100%) sepia(8%) hue-rotate(60deg) brightness(97%) contrast(97%);
 }
 
 /* Styled leaflet elements to match L'Fleur branding */
@@ -66,4 +65,35 @@ body {
   background: #fafaf7;
   border-left: 1px solid #e8d9d2;
   border-right: 1px solid #e8d9d2;
+}
+
+
+
+/* scrollbar */
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+/* 2. Khusus Webkit Browsers (Chrome, Edge, Safari Lama, Opera) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Mengatur bagian track (latar belakang scrollbar) */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Mengatur bagian thumb (batang/tombol scrollbar yang digeser) */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 20px;
+}
+
+/* Efek Hover: Batang scrollbar sedikit lebih gelap saat disorot */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
 }

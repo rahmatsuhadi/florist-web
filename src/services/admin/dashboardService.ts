@@ -13,6 +13,7 @@ export interface Transaction {
   total: string;
   status: string;
   date: string;
+  scheduledDate?: string | Date | null;
 }
 
 export interface DashboardMetrics {
@@ -53,6 +54,7 @@ export const getRecentTransactions = async (): Promise<Transaction[]> => {
       status: orders.status,
       total: orders.totalAmount,
       date: orders.createdAt,
+      scheduledDate: orders.scheduledDate,
       productName: orderItems.productName,
     })
     .from(orders)
@@ -74,5 +76,6 @@ export const getRecentTransactions = async (): Promise<Transaction[]> => {
       hour: "2-digit",
       minute: "2-digit",
     }),
+    scheduledDate: ro.scheduledDate,
   }));
 };

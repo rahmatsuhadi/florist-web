@@ -7,7 +7,7 @@ export const SloganSection = ({ shopInfo }: { shopInfo: StoreSettingsData }) => 
       <div className="container mx-auto px-6 max-w-4xl">
         <FadeInWrapper>
           <h2 className="font-playfair text-3xl md:text-4xl mb-6 leading-snug">
-            {shopInfo.fullName || "L'Fleur Mattz Florist"}, sampaikan ucapan dengan mudah, cantik, dan tepat waktu.
+            {shopInfo.name || "L'Fleur Mattz Florist"}, sampaikan ucapan dengan mudah, cantik, dan tepat waktu.
           </h2>
         </FadeInWrapper>
         <FadeInWrapper>

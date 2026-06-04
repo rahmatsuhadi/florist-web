@@ -17,12 +17,16 @@ import { useEffect, useRef, useState } from "react";
 import { PRODUCTS, Product } from "@/constants/mockData";
 import { type Message, sendMessageToGemini } from "@/services/aiService";
 import { formatIdr } from "@/utils/format";
-import { useShopStore } from "@/store/shopStore";
+import { useAppContext } from "@/store/AppContext";
+import type { StoreSettingsData } from "@/services/admin/storefrontService";
 
-export const FloatingWidgets: React.FC = () => {
+export const FloatingWidgets: React.FC<{ shopInfo?: StoreSettingsData }> = ({ shopInfo: propShopInfo }) => {
   const router = useRouter();
-  const shopName = useShopStore((s) => s.name);
-  const shopPhoneWa = useShopStore((s) => s.phoneWa);
+  const { shopInfo: contextShopInfo } = useAppContext();
+  
+  const shopData = propShopInfo || contextShopInfo;
+  const shopName = shopData?.name || "L'Fleur Mattz";
+  const shopPhoneWa = shopData?.phoneWa || "";
   
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);

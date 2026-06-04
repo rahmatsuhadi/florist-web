@@ -4,14 +4,21 @@ import { MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
 import type React from "react";
-import { useShopStore } from "@/store/shopStore";
+import { useAppContext } from "@/store/AppContext";
+import type { StoreSettingsData } from "@/services/admin/storefrontService";
 
-export const Footer: React.FC = () => {
-  const shopName = useShopStore((s) => s.name);
-  const fullName = useShopStore((s) => s.fullName);
-  const address = useShopStore((s) => s.address);
-  const phone = useShopStore((s) => s.phone);
-  const instagram = useShopStore((s) => s.instagram);
+export const Footer: React.FC<{ shopInfo?: StoreSettingsData }> = ({ shopInfo: propShopInfo }) => {
+  const { shopInfo: contextShopInfo } = useAppContext();
+  
+  // Use prop if available, otherwise context
+  const shopData = propShopInfo || contextShopInfo;
+  
+  const name = shopData?.name || "";
+  const subName = shopData?.subName || "";
+  const address = shopData?.address || "";
+  const phone = shopData?.phone || "";
+  const instagram = shopData?.instagram || "";
+  
   const instagramUrl = instagram ? `https://instagram.com/${instagram.replace("@", "")}` : "#";
 
   return (
@@ -19,6 +26,7 @@ export const Footer: React.FC = () => {
       <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
         <div>
           <Logo
+            shopInfo={{name,subName}}
             layout="vertical"
             className="mb-6"
             iconClassName="text-[#829E8D]"
@@ -95,7 +103,7 @@ export const Footer: React.FC = () => {
         </div>
       </div>
       <div className="text-center font-sans text-xs text-gray-500 border-t border-gray-700 pt-8">
-        &copy; {new Date().getFullYear()} {fullName}. All rights
+        &copy; {new Date().getFullYear()} {name}. All rights
 
         reserved.
       </div>

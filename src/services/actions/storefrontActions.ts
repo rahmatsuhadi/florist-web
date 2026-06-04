@@ -9,7 +9,7 @@ import { revalidateTag } from "next/cache";
 
 const storefrontSchema = z.object({
   name: z.string().min(2, "Nama toko minimal 2 karakter"),
-  fullName: z.string().min(3, "Nama lengkap toko minimal 3 karakter"),
+  subName: z.string().min(3, "Nama lengkap toko minimal 3 karakter"),
   phone: z.string().min(5, "Nomor telepon tidak valid"),
   phoneWa: z.string().min(10, "Nomor WhatsApp minimal 10 digit").regex(/^62/, "Nomor WA harus diawali 62"),
   instagram: z.string().min(1, "Username Instagram tidak boleh kosong"),
@@ -31,7 +31,7 @@ export async function saveStorefrontAction(
 ): Promise<SaveStorefrontState> {
   const data = {
     name: formData.get("name") as string,
-    fullName: formData.get("fullName") as string,
+    subName: formData.get("subName") as string,
     phone: formData.get("phone") as string,
     phoneWa: formData.get("phoneWa") as string,
     instagram: formData.get("instagram") as string,
@@ -67,6 +67,7 @@ export async function saveStorefrontAction(
     }
 
     revalidateTag("store-settings", 'max');
+    revalidatePath("/", "layout");
 
     return {
       success: true,

@@ -5,7 +5,7 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import { useShopStore } from "@/store/shopStore";
+import { useAppContext } from "@/store/AppContext";
 
 // Fix Leaflet default marker icon paths in next.js/react-leaflet
 const DefaultIcon = L.icon({
@@ -32,10 +32,11 @@ export const StoreMap: React.FC<StoreMapProps> = ({
   longitude,
   zoom = 16,
 }) => {
-  const shopName = useShopStore((s) => s.fullName);
-  const shopAddress = useShopStore((s) => s.address);
-  const defaultLat = useShopStore((s) => s.latitude);
-  const defaultLng = useShopStore((s) => s.longitude);
+  const { shopInfo } = useAppContext();
+  const shopName = shopInfo?.name;
+  const shopAddress = shopInfo?.address;
+  const defaultLat = shopInfo?.latitude;
+  const defaultLng = shopInfo?.longitude;
   
   const [mounted, setMounted] = useState(false);
 

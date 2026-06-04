@@ -7,8 +7,9 @@ import { Logo } from "@/components/ui/Logo";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useAppContext, CartItem } from "@/store/AppContext";
+import type { StoreSettingsData } from "@/services/admin/storefrontService";
 
-export const Navbar: React.FC = () => {
+export const Navbar: React.FC<{ shopInfo?: StoreSettingsData }> = ({ shopInfo }) => {
   const { cart, setIsCartOpen } = useAppContext();
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
@@ -81,6 +82,7 @@ export const Navbar: React.FC = () => {
 
         <Link href="/">
           <Logo
+            shopInfo={shopInfo}
             iconClassName={
               showScrolledStyle ? "text-[#829E8D]" : "text-[#E8D9D2]"
             }

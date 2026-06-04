@@ -42,7 +42,9 @@ export type SaveProductState = {
 
 export async function saveProductAction(prevState: SaveProductState, formData: FormData): Promise<SaveProductState> {
   let isSuccess = false;
-  
+  let savedId: string | null = null;
+  let productCategory = formData.get("category") as string;
+
   try {
     const rawImages = formData.get("images") as string;
     const rawVariantGroups = formData.get("variantGroups") as string;
@@ -50,7 +52,7 @@ export async function saveProductAction(prevState: SaveProductState, formData: F
     const data = {
       name: formData.get("name") as string,
       basePrice: formData.get("basePrice") as string,
-      category: formData.get("category") as string,
+      category: productCategory,
       description: formData.get("description") as string,
       images: rawImages ? JSON.parse(rawImages) : [],
       variantGroups: rawVariantGroups ? JSON.parse(rawVariantGroups) : [],
@@ -73,13 +75,17 @@ export async function saveProductAction(prevState: SaveProductState, formData: F
     }
 
     const id = formData.get("id") as string;
+    savedId = id;
 
     if (id) {
       await updateProduct(Number(id), validatedData.data);
     } else {
-      await createProduct(validatedData.data);
+      const newProduct = await createProduct(validatedData.data);
+      if (newProduct?.id) {
+        savedId = String(newProduct.id);
+      }
     }
-    
+
     isSuccess = true;
   } catch (error) {
     console.error("Save product action failed:", error);
@@ -98,8 +104,19 @@ export async function saveProductAction(prevState: SaveProductState, formData: F
   // Next.js redirect must be called outside try-catch
   if (isSuccess) {
     revalidatePath("/admin/products");
+
+    if (savedId) {
+      revalidatePath(`/products/${savedId}`);
+    }
+
+    //  Revalidate halaman list produk
+    if (productCategory) {
+      const normalizedCategory = productCategory.toLowerCase();
+      revalidatePath(`/collections/${normalizedCategory}`);
+    }
+
     redirect("/admin/products");
   }
-  
+
   return { success: false };
 }

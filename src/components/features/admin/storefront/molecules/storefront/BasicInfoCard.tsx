@@ -36,8 +36,8 @@ export const BasicInfoCard: React.FC<BasicInfoCardProps> = ({ initialData, error
           <label className="text-sm font-semibold text-gray-700">Nama Lengkap Toko</label>
           <input 
             type="text" 
-            name="fullName"
-            defaultValue={initialData.fullName}
+            name="subName"
+            defaultValue={initialData.subName}
             placeholder="Cth: L'Bunga Kita Florist"
             className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all text-sm"
           />

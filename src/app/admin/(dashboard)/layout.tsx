@@ -16,15 +16,17 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const storeSettings = await getStoreSettings();
+
   return (
     <div className="min-h-screen bg-[#FDFBF7] font-inter text-[#2D3748] ">
       {/* Sidebar Component */}
-      <Sidebar />
+      <Sidebar shopInfo={storeSettings} />
 
       {/* Main Content Area */}
       <main className="pl-64 min-h-screen flex flex-col">

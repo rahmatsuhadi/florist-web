@@ -17,11 +17,14 @@ import {
   MonitorSmartphone,
 } from "lucide-react";
 import { logout } from "@/services/admin/authService";
+import type { StoreSettingsData } from "@/services/admin/storefrontService";
 
-export const Sidebar = () => {
+export const Sidebar: React.FC<{ shopInfo?: StoreSettingsData }> = ({ shopInfo }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [expandedWebsite, setExpandedWebsite] = useState(true);
+
+  const shopName = shopInfo?.name || "Fleuriste";
 
   const mainItems = [
     { id: "overview", path: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -72,7 +75,7 @@ export const Sidebar = () => {
     <div className="w-64 h-screen bg-white/60 backdrop-blur-xl border-r border-brand/10 fixed left-0 top-0 flex flex-col z-20 shadow-[4px_0_24px_rgba(0,0,0,0.01)]">
       <div className="p-8 pb-6">
         <h2 className="font-serif text-2xl font-bold text-brand tracking-wide">
-          Fleuriste.
+          {shopName}.
         </h2>
       </div>
 

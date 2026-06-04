@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useShopStore } from "@/store/shopStore";
+import { useAppContext } from "@/store/AppContext";
 
 interface LogoProps {
   layout?: "horizontal" | "vertical";
@@ -9,6 +9,7 @@ interface LogoProps {
   iconClassName?: string;
   textClassName?: string;
   subtitleClassName?: string;
+  shopInfo?: { name: string, subName: string };
 }
 
 export const Logo: React.FC<LogoProps> = ({
@@ -17,9 +18,12 @@ export const Logo: React.FC<LogoProps> = ({
   iconClassName = "",
   textClassName = "",
   subtitleClassName = "",
+  shopInfo: propShopInfo,
 }) => {
   const isVertical = layout === "vertical";
-  const shopName = useShopStore((s) => s.name || "L'Fleur Mattz");
+  const { shopInfo: contextShopInfo } = useAppContext();
+  const shopName = propShopInfo?.name || contextShopInfo?.name || "L'Fleur Mattz";
+  const subName = propShopInfo?.subName || contextShopInfo?.subName || "Florist Jogja";
   const [firstPart, ...restParts] = shopName.split(" ");
   const restText = restParts.join(" ");
 
@@ -175,7 +179,7 @@ export const Logo: React.FC<LogoProps> = ({
               : "text-[#829E8D]")
           }`}
         >
-          Florist Jogja
+          {subName}
         </span>
       </div>
     </div>

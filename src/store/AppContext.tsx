@@ -2,6 +2,7 @@
 
 import type React from "react";
 import { createContext, useContext, useReducer, useState, useEffect } from "react";
+import type { StoreSettingsData } from "@/services/admin/storefrontService";
 
 export interface VariantDetail {
   name: string;
@@ -49,6 +50,7 @@ export interface AppContextType {
   dispatch: React.Dispatch<CartAction>;
   customerInfo: CustomerInfo;
   setCustomerInfo: (info: CustomerInfo) => void;
+  shopInfo: StoreSettingsData | null;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -99,11 +101,25 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
   }
 };
 
-export const AppProvider = ({ children }: { children: React.ReactNode }) => {
+export const AppProvider = ({ 
+  children,
+  initialShopInfo 
+}: { 
+  children: React.ReactNode;
+  initialShopInfo?: StoreSettingsData;
+}) => {
   const [cartState, dispatch] = useReducer(cartReducer, { items: [] });
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toast, setToast] = useState<{ message: string } | null>(null);
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({ name: "", phone: "" });
+  const [shopInfo, setShopInfo] = useState<StoreSettingsData | null>(initialShopInfo || null);
+
+  // Update shopInfo if prop changes (e.g. after revalidation)
+  useEffect(() => {
+    if (initialShopInfo) {
+      setShopInfo(initialShopInfo);
+    }
+  }, [initialShopInfo]);
 
   // Load from localStorage if available (optional, but good for UX)
   useEffect(() => {
@@ -149,6 +165,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         addToCart,
         customerInfo,
         setCustomerInfo,
+        shopInfo,
       }}
     >
       {children}

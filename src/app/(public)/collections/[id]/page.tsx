@@ -42,6 +42,13 @@ export async function generateMetadata({
   };
 }
 
+export async function generateStaticParams() {
+  return CATEGORIES.map((category) => ({
+    id: category.id,
+  }));
+}
+    
+
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { id } = await params;
   const normalizedId = id.toLowerCase();

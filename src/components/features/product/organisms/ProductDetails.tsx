@@ -91,11 +91,19 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
     setItemNotes("");
   };
 
+  const allImages = product.images;
+  Object.values(selectedVariants).forEach((opt) => {
+    if (opt.image && !allImages.includes(opt.image)) {
+      allImages.push(opt.image);
+    }
+  });
+
+
   return (
     <div className="flex flex-col md:flex-row gap-12 lg:gap-20">
       <ProductGallery
         productName={product.name}
-        images={product.images}
+        images={allImages}
         activeImage={activeImage}
         onImageSelect={setActiveImage}
       />

@@ -94,7 +94,7 @@ export const notifications = pgTable("notifications", {
 export const storeSettings = pgTable("store_settings", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
-  fullName: varchar("full_name", { length: 255 }).notNull(),
+  subName: varchar("sub_name", { length: 255 }).notNull(),
   phone: varchar("phone", { length: 50 }).notNull(),
   phoneWa: varchar("phone_wa", { length: 50 }).notNull(),
   instagram: varchar("instagram", { length: 255 }).notNull(),

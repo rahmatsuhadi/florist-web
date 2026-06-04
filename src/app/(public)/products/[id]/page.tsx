@@ -5,6 +5,8 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { CATEGORIES, Category } from "@/constants/mockData";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { db } from "@/db";
+import { products } from "@/db/schema";
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -15,7 +17,7 @@ export async function generateMetadata({
 }: ProductPageProps): Promise<Metadata> {
   const { id } = await params;
   const numId = Number(id);
-  
+
   if (isNaN(numId)) {
     return {
       title: "Produk Tidak Ditemukan",
@@ -47,6 +49,14 @@ export async function generateMetadata({
       ],
     },
   };
+}
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const allProductIds = await db.select({ id: products.id }).from(products);
+  return allProductIds.map((product) => ({
+    id: String(product.id),
+  }));
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {

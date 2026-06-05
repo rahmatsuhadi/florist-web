@@ -16,11 +16,15 @@ export const useCheckout = () => {
     longitude: "",
     scheduledDate: "",
     scheduledTime: "",
+    locationId: undefined as number | undefined,
+    shippingCost: 0,
+    isLocationComplete: false,
   });
 
   const [errors, setErrors] = useState({
     address: "",
     location: "",
+    locationSelect: "",
     scheduledDate: "",
     scheduledTime: "",
   });
@@ -36,13 +40,14 @@ export const useCheckout = () => {
     const newErrors = {
       address: deliveryMethod === "delivery" && !checkoutData.address.trim() ? "Alamat wajib diisi." : "",
       location: deliveryMethod === "delivery" && (!checkoutData.latitude || !checkoutData.longitude) ? "Titik lokasi peta wajib ditentukan." : "",
+      locationSelect: deliveryMethod === "delivery" && !checkoutData.isLocationComplete ? "Pilih wilayah pengiriman hingga level terdalam (terakhir)." : "",
       scheduledDate: !checkoutData.scheduledDate ? "Tanggal wajib dipilih." : "",
       scheduledTime: !checkoutData.scheduledTime ? "Jam wajib dipilih." : "",
     };
 
     setErrors(newErrors);
 
-    if (newErrors.address || newErrors.location || newErrors.scheduledDate || newErrors.scheduledTime) {
+    if (newErrors.address || newErrors.location || newErrors.locationSelect || newErrors.scheduledDate || newErrors.scheduledTime) {
       setToast({ message: "Mohon lengkapi semua data formulir." });
       setTimeout(() => setToast(null), 3000);
       return;
@@ -68,16 +73,21 @@ export const useCheckout = () => {
         notes: item.notes,
       }));
 
+      // Total kalkulasi termasuk ongkir jika ada
+      const finalTotalAmount = cartTotal + (deliveryMethod === "delivery" ? checkoutData.shippingCost : 0);
+
       const res = await createOrder({
         customerName: customerInfo.name,
         customerPhone: customerInfo.phone,
         customerAddress: deliveryMethod === "delivery" ? checkoutData.address : "",
         customerLatitude: deliveryMethod === "delivery" && checkoutData.latitude ? checkoutData.latitude : undefined,
         customerLongitude: deliveryMethod === "delivery" && checkoutData.longitude ? checkoutData.longitude : undefined,
+        locationId: deliveryMethod === "delivery" ? checkoutData.locationId : undefined,
+        shippingCost: deliveryMethod === "delivery" ? checkoutData.shippingCost.toString() : undefined,
         deliveryMethod,
         scheduledDate: checkoutData.scheduledDate,
         scheduledTime: checkoutData.scheduledTime,
-        totalAmount: cartTotal.toString(),
+        totalAmount: finalTotalAmount.toString(),
         items: orderItemsData,
       });
 

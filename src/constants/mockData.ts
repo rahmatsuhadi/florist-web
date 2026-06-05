@@ -67,7 +67,11 @@ export const PRODUCTS: Product[] = [
     name: "White Elegance Rose",
     price: 750000,
     bestSeller: true,
-    images: ["/images/products/p1_3.webp", "/images/products/p1_2.webp", "/images/products/p1_1.webp"],
+    images: [
+      "/images/products/p1_3.webp",
+      "/images/products/p1_2.webp",
+      "/images/products/p1_1.webp",
+    ],
     description:
       "Rangkaian mawar putih premium yang melambangkan kemurnian cinta, dihiasi dengan baby breath yang elegan.",
     variants: [
@@ -286,7 +290,6 @@ export const GALLERY_ITEMS: GalleryItem[] = [
   },
 ];
 
-
 export interface HeroBanner {
   id: string;
   image: string;
@@ -299,19 +302,21 @@ export const HERO_BANNERS: HeroBanner[] = [
     id: "b1",
     image: "/images/hero.webp",
     title: "Bespoke Floral Arrangements",
-    subtitle: "Rangkaian bunga segar premium yang dirangkai dengan penuh cinta untuk menyempurnakan setiap momen berharga Anda.",
+    subtitle:
+      "Rangkaian bunga segar premium yang dirangkai dengan penuh cinta untuk menyempurnakan setiap momen berharga Anda.",
   },
   {
     id: "b2",
     image: "/images/hero_2.webp",
     title: "Blossom with Love",
-    subtitle: "Hadirkan keindahan alam terbaik langsung ke rumah Anda dengan koleksi musiman peony dan mawar kami.",
+    subtitle:
+      "Hadirkan keindahan alam terbaik langsung ke rumah Anda dengan koleksi musiman peony dan mawar kami.",
   },
   {
     id: "b3",
     image: "/images/hero_3.webp",
     title: "Boutique Florist Experience",
-    subtitle: "Kunjungi studio florist kami untuk konsultasi khusus pernikahan, kado ulang tahun, dan pesanan kustom.",
+    subtitle:
+      "Kunjungi studio florist kami untuk konsultasi khusus pernikahan, kado ulang tahun, dan pesanan kustom.",
   },
 ];
-

@@ -1,5 +1,5 @@
 import { PRODUCTS } from "../constants/mockData";
-import { SHOP_INFO } from "../constants/shopInfo";
+import { getStoreSettings } from "./admin/storefrontService";
 
 export interface Message {
   role: "user" | "model";
@@ -9,19 +9,19 @@ export interface Message {
 export const sendMessageToGemini = async (
   messages: Message[],
 ): Promise<string> => {
-
   if (true) {
     return "Maaf, untuk sekarang pertanyaan lebih lanjut silahkan hubungi CS kami di WhatsApp untuk bantuan langsung!";
   }
 
+  // const storeSettings = await getStoreSettings();
   // System prompt yang diinjeksi dengan data produk agar AI relevan
-  //   const systemInstruction = `Kamu adalah asisten AI toko bunga ${SHOP_INFO.name}. Jawab dengan ramah, elegan, hangat, dan ringkas. 
+  //   const systemInstruction = `Kamu adalah asisten AI toko bunga ${storeSettings.name}. Jawab dengan ramah, elegan, hangat, dan ringkas.
   // Tugasmu membantu pelanggan mencari atau merekomendasikan bunga yang tepat.
-  // Daftar produk ${SHOP_INFO.name} saat ini:
+  // Daftar produk ${storeSettings.name} saat ini:
   // ${PRODUCTS.map((p) => `- ID: ${p.id} | Nama: ${p.name} | Kategori: ${p.categoryId} | Harga: Rp${p.price} | Deskripsi: ${p.description}`).join("\n")}
 
   // ATURAN PENTING:
-  // Jika kamu merekomendasikan produk, kamu WAJIB menyertakan ID produk dengan format persis [PRODUCT:id] di dalam kalimatmu. 
+  // Jika kamu merekomendasikan produk, kamu WAJIB menyertakan ID produk dengan format persis [PRODUCT:id] di dalam kalimatmu.
   // Contoh: "Saya sangat merekomendasikan [PRODUCT:p1] untuk acara pernikahan Anda."
   // Jangan gunakan format markdown link lain untuk produk. Cukup gunakan format [PRODUCT:id].`;
 

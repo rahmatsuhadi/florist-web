@@ -1,11 +1,11 @@
-import { DashboardOverview } from "@/components/organisms/admin/dashboard/DashboardOverview";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Admin Dashboard | Fleuriste Bouquet",
-  description: "Overview dashboard for Admin Workspace",
-};
+import { Suspense } from "react";
+import { DashboardOverview } from "@/components/features/admin/core/organisms/dashboard/DashboardOverview";
+import { LoadingSpinner } from "@/components/features/admin/core/atoms/LoadingSpinner";
 
 export default function AdminDashboardPage() {
-  return <DashboardOverview />;
+  return (
+    <Suspense fallback={<LoadingSpinner text="Memuat Dashboard..." className="h-[60vh]" />}>
+      <DashboardOverview />
+    </Suspense>
+  );
 }

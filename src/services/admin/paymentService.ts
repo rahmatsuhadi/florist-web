@@ -2,14 +2,77 @@
 
 import { db } from "@/db";
 import { payments, orders } from "@/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, like, or, and, sql, SQL, count } from "drizzle-orm";
 
 export type PaymentWithCustomer = typeof payments.$inferSelect & {
   customerName: string;
 };
 
-export async function getPaymentHistory(): Promise<PaymentWithCustomer[]> {
+interface GetPaymentHistoryParams {
+  q?: string;
+  method?: string;
+  page?: number;
+  limit?: number;
+}
+
+export async function getPaymentHistory(
+  params: GetPaymentHistoryParams = {}
+): Promise<{ data: PaymentWithCustomer[]; total: number }> {
+  const { q = "", method = "Semua", page = 1, limit = 10 } = params;
+
   try {
+    // Build dynamic WHERE conditions
+    const conditions: SQL[] = [];
+
+    // Search filter (order ID, customer name, or PAY-id)
+    if (q) {
+      const searchTerm = `%${q}%`;
+      conditions.push(
+        or(
+          like(payments.orderId, searchTerm),
+          like(orders.customerName, searchTerm),
+          like(sql`CAST(${payments.id} AS TEXT)`, searchTerm)
+        )!
+      );
+    }
+
+    // Payment method filter
+    if (method && method !== "Semua") {
+      if (method === "Transfer Bank") {
+        conditions.push(eq(payments.paymentMethod, "bank_transfer"));
+      } else if (method === "E-Wallet") {
+        conditions.push(
+          or(
+            eq(payments.paymentMethod, "qris"),
+            eq(payments.paymentMethod, "gopay"),
+            eq(payments.paymentMethod, "shopeepay")
+          )!
+        );
+      } else if (method === "Lainnya") {
+        conditions.push(
+          and(
+            sql`${payments.paymentMethod} != 'bank_transfer'`,
+            sql`${payments.paymentMethod} != 'qris'`,
+            sql`${payments.paymentMethod} != 'gopay'`,
+            sql`${payments.paymentMethod} != 'shopeepay'`
+          )!
+        );
+      }
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+    // Get total count for pagination
+    const [totalResult] = await db
+      .select({ value: count() })
+      .from(payments)
+      .leftJoin(orders, eq(payments.orderId, orders.id))
+      .where(whereClause);
+
+    const total = totalResult?.value || 0;
+
+    // Get paginated results
+    const offset = (page - 1) * limit;
     const results = await db
       .select({
         payment: payments,
@@ -17,15 +80,53 @@ export async function getPaymentHistory(): Promise<PaymentWithCustomer[]> {
       })
       .from(payments)
       .leftJoin(orders, eq(payments.orderId, orders.id))
-      .orderBy(desc(payments.createdAt));
+      .where(whereClause)
+      .orderBy(desc(payments.createdAt))
+      .limit(limit)
+      .offset(offset);
 
-    return results.map((row) => ({
+    const data = results.map((row) => ({
       ...row.payment,
       customerName: row.customerName || "Pelanggan Umum",
     }));
+
+    return { data, total };
   } catch (error) {
     console.error("Error fetching payment history:", error);
     throw new Error("Gagal mengambil data riwayat pembayaran");
+  }
+}
+
+export interface PaymentStatsResult {
+  totalVerifiedAmount: number;
+  successCount: number;
+  totalAttempts: number;
+}
+
+export async function getPaymentStats(): Promise<PaymentStatsResult> {
+  try {
+    const allPayments = await db.select({
+      amount: payments.amount,
+      status: payments.status,
+    }).from(payments);
+
+    const successStatuses = ["success", "settlement", "capture"];
+
+    const successPayments = allPayments.filter((p) =>
+      successStatuses.includes(p.status)
+    );
+
+    return {
+      totalVerifiedAmount: successPayments.reduce(
+        (acc, curr) => acc + parseFloat(curr.amount || "0"),
+        0
+      ),
+      successCount: successPayments.length,
+      totalAttempts: allPayments.length,
+    };
+  } catch (error) {
+    console.error("Error fetching payment stats:", error);
+    return { totalVerifiedAmount: 0, successCount: 0, totalAttempts: 0 };
   }
 }
 

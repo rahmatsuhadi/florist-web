@@ -1,11 +1,9 @@
-"use server";
-
 import { db } from "@/db";
 import { heroBanners, galleryItems } from "@/db/schema";
-import { eq, desc, asc } from "drizzle-orm";
+import { asc } from "drizzle-orm";
 import { HERO_BANNERS, GALLERY_ITEMS } from "@/constants/mockData";
-import { revalidatePath } from "next/cache";
 
+// Types shared across server and client boundaries
 export interface HeroBannerData {
   id?: number;
   imageUrl: string;
@@ -24,7 +22,9 @@ export interface GalleryItemData {
   isActive: boolean;
 }
 
-// === HERO BANNERS ===
+// === READ-ONLY QUERIES ===
+// Called from Async Server Components (page.tsx).
+// Mutations are handled by Server Actions in services/actions/contentActions.ts.
 
 export async function getHeroBanners(): Promise<HeroBannerData[]> {
   try {
@@ -56,58 +56,6 @@ export async function getHeroBanners(): Promise<HeroBannerData[]> {
   }
 }
 
-export async function addHeroBanner(data: HeroBannerData): Promise<{ success: boolean; message: string }> {
-  try {
-    await db.insert(heroBanners).values({
-      imageUrl: data.imageUrl,
-      title: data.title,
-      subtitle: data.subtitle,
-      position: data.position,
-      isActive: data.isActive,
-    });
-    revalidatePath("/");
-    revalidatePath("/admin/content");
-    return { success: true, message: "Banner berhasil ditambahkan." };
-  } catch (error) {
-    console.error("Failed to add hero banner:", error);
-    return { success: false, message: "Gagal menambahkan banner." };
-  }
-}
-
-export async function updateHeroBanner(id: number, data: HeroBannerData): Promise<{ success: boolean; message: string }> {
-  try {
-    await db.update(heroBanners)
-      .set({
-        imageUrl: data.imageUrl,
-        title: data.title,
-        subtitle: data.subtitle,
-        position: data.position,
-        isActive: data.isActive,
-      })
-      .where(eq(heroBanners.id, id));
-    revalidatePath("/");
-    revalidatePath("/admin/content");
-    return { success: true, message: "Banner berhasil diperbarui." };
-  } catch (error) {
-    console.error("Failed to update hero banner:", error);
-    return { success: false, message: "Gagal memperbarui banner." };
-  }
-}
-
-export async function deleteHeroBanner(id: number): Promise<{ success: boolean; message: string }> {
-  try {
-    await db.delete(heroBanners).where(eq(heroBanners.id, id));
-    revalidatePath("/");
-    revalidatePath("/admin/content");
-    return { success: true, message: "Banner berhasil dihapus." };
-  } catch (error) {
-    console.error("Failed to delete hero banner:", error);
-    return { success: false, message: "Gagal menghapus banner." };
-  }
-}
-
-// === GALLERY ITEMS ===
-
 export async function getGalleryItems(): Promise<GalleryItemData[]> {
   try {
     const gallery = await db.query.galleryItems.findMany({
@@ -134,55 +82,5 @@ export async function getGalleryItems(): Promise<GalleryItemData[]> {
   } catch (error) {
     console.error("Failed to fetch gallery:", error);
     return [];
-  }
-}
-
-export async function addGalleryItem(data: GalleryItemData): Promise<{ success: boolean; message: string }> {
-  try {
-    await db.insert(galleryItems).values({
-      imageUrl: data.imageUrl,
-      gridClass: data.gridClass,
-      altText: data.altText,
-      position: data.position,
-      isActive: data.isActive,
-    });
-    revalidatePath("/");
-    revalidatePath("/admin/content");
-    return { success: true, message: "Foto galeri berhasil ditambahkan." };
-  } catch (error) {
-    console.error("Failed to add gallery item:", error);
-    return { success: false, message: "Gagal menambahkan foto galeri." };
-  }
-}
-
-export async function updateGalleryItem(id: number, data: GalleryItemData): Promise<{ success: boolean; message: string }> {
-  try {
-    await db.update(galleryItems)
-      .set({
-        imageUrl: data.imageUrl,
-        gridClass: data.gridClass,
-        altText: data.altText,
-        position: data.position,
-        isActive: data.isActive,
-      })
-      .where(eq(galleryItems.id, id));
-    revalidatePath("/");
-    revalidatePath("/admin/content");
-    return { success: true, message: "Foto galeri berhasil diperbarui." };
-  } catch (error) {
-    console.error("Failed to update gallery item:", error);
-    return { success: false, message: "Gagal memperbarui foto galeri." };
-  }
-}
-
-export async function deleteGalleryItem(id: number): Promise<{ success: boolean; message: string }> {
-  try {
-    await db.delete(galleryItems).where(eq(galleryItems.id, id));
-    revalidatePath("/");
-    revalidatePath("/admin/content");
-    return { success: true, message: "Foto galeri berhasil dihapus." };
-  } catch (error) {
-    console.error("Failed to delete gallery item:", error);
-    return { success: false, message: "Gagal menghapus foto galeri." };
   }
 }

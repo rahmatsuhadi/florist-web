@@ -1,5 +1,3 @@
-"use server";
-
 import { db } from "@/db";
 import { seoSettings } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -22,7 +20,7 @@ export const getSeoSettings = unstable_cache(
 
       const storeSettings = await getStoreSettings();
       const storeName = storeSettings.name || "Florist";
-      const fullName = storeSettings.fullName || storeName;
+      const fullName = storeSettings.name || storeName;
 
       let result: SeoSettingsData;
 
@@ -86,34 +84,3 @@ export const getSeoSettings = unstable_cache(
   ["seo-settings"],
   { tags: ["seo-settings"], revalidate: 3600 }
 );
-
-export async function updateSeoSettings(data: SeoSettingsData): Promise<{ success: boolean; message: string }> {
-  try {
-    const existingSettings = await db.query.seoSettings.findFirst({
-      where: eq(seoSettings.pageName, data.pageName)
-    });
-
-    if (existingSettings) {
-      await db.update(seoSettings)
-        .set({
-          title: data.title,
-          description: data.description,
-          keywords: data.keywords,
-          updatedAt: new Date(),
-        })
-        .where(eq(seoSettings.id, existingSettings.id));
-    } else {
-      await db.insert(seoSettings).values({
-        pageName: data.pageName,
-        title: data.title,
-        description: data.description,
-        keywords: data.keywords,
-      });
-    }
-
-    return { success: true, message: "Pengaturan SEO berhasil disimpan." };
-  } catch (error) {
-    console.error("Failed to save SEO settings:", error);
-    return { success: false, message: "Gagal menyimpan pengaturan SEO." };
-  }
-}

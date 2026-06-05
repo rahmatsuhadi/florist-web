@@ -1,4 +1,7 @@
-import { ContentManager } from "@/components/organisms/admin/content/ContentManager";
+import { Suspense } from "react";
+import { getHeroBanners, getGalleryItems } from "@/services/admin/contentService";
+import { ContentManager } from "@/components/features/admin/content/organisms/ContentManager";
+import { LoadingSpinner } from "@/components/features/admin/core/atoms/LoadingSpinner";
 
 export const metadata = {
   title: "Manajemen Konten | Admin",
@@ -18,7 +21,25 @@ export default function ContentPage() {
         </div>
       </header>
 
-      <ContentManager />
+      <Suspense fallback={<LoadingSpinner text="Memuat Konten..." className="py-20" />}>
+        <ContentLoader />
+      </Suspense>
     </div>
   );
 }
+
+/** Async Server Component — fetches data then passes to client ContentManager */
+async function ContentLoader() {
+  const [banners, gallery] = await Promise.all([
+    getHeroBanners(),
+    getGalleryItems(),
+  ]);
+
+  return (
+    <ContentManager
+      initialBanners={banners}
+      initialGallery={gallery}
+    />
+  );
+}
+

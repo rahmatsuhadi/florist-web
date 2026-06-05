@@ -3,7 +3,6 @@ import { Lora, Playfair_Display, Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 import { getStoreSettings } from "@/services/admin/storefrontService";
-import { StoreInitializer } from "@/components/utilities/StoreInitializer";
 
 const lora = Lora({
   subsets: ["latin"],
@@ -33,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: {
       default: seoData.title,
-      template: `%s | ${storeSettings.fullName}`,
+      template: `%s | ${storeSettings.name}`,
     },
     description: seoData.description,
     keywords: seoData.keywords ? seoData.keywords.split(",").map(k => k.trim()) : [],
@@ -48,16 +47,16 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       locale: "id_ID",
       url: "https://florist-one.vercel.app",
-      title: `${storeSettings.fullName} | Rangkaian Bunga Premium Yogyakarta`,
+      title: `${storeSettings.name} | Rangkaian Bunga Premium Yogyakarta`,
       description:
         "Toko Bunga Premium Yogyakarta - Rangkaian bunga segar berkualitas tinggi untuk momen wisuda, pernikahan, anniversary, dan duka cita.",
-      siteName: storeSettings.fullName,
+      siteName: storeSettings.name,
       images: [
         {
           url: "/images/hero/h1.webp",
           width: 1200,
           height: 630,
-          alt: storeSettings.fullName,
+          alt: storeSettings.name,
         },
       ],
     },
@@ -79,7 +78,6 @@ export default async function RootLayout({
         suppressHydrationWarning
         className="min-h-full flex flex-col font-sans selection:bg-[#E8D9D2] selection:text-[#2C302E]"
       >
-        <StoreInitializer initialData={storeSettings} />
         {children}
         <Toaster
           position="bottom-center"

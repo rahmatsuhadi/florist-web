@@ -32,6 +32,8 @@ export const orders = pgTable("orders", {
   deliveryMethod: varchar("delivery_method", { length: 50 }).notNull().default("delivery"),
   scheduledDate: varchar("scheduled_date", { length: 50 }),
   scheduledTime: varchar("scheduled_time", { length: 50 }),
+  locationId: integer("location_id"),
+  shippingCost: varchar("shipping_cost", { length: 255 }),
   totalAmount: varchar("total_amount", { length: 255 }).notNull(),
   status: varchar("status", { length: 50 }).notNull().default("Menunggu Pembayaran"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -131,5 +133,15 @@ export const seoSettings = pgTable("seo_settings", {
   title: varchar("title", { length: 255 }),
   description: text("description"),
   keywords: text("keywords"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const locations = pgTable("locations", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  shippingCost: integer("shipping_cost"), // Nullable, if null it means it uses parent's cost or has no cost defined yet
+  parentId: integer("parent_id").references((): any => locations.id, { onDelete: "cascade" }),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

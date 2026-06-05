@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { getStoreSettings } from "@/services/admin/storefrontService";
-import { getOrdersByPhone } from "@/services/public/checkoutService";
+import { getOrdersByPhoneAndId } from "@/services/public/checkoutService";
 import { TrackOrderForm } from "@/components/features/order/molecules/TrackOrderForm";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -19,16 +19,17 @@ export async function generateMetadata(): Promise<Metadata> {
 
 
 interface PageProps {
-  searchParams: Promise<{ phone?: string }>;
+  searchParams: Promise<{ phone?: string, orderId?: string }>;
 }
 
 export default async function TrackOrderPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const phone = params.phone || "";
+  const orderId = params.orderId || "";
   
   let searchResults = null;
-  if (phone) {
-    searchResults = await getOrdersByPhone(phone);
+  if (phone && orderId) {
+    searchResults = await getOrdersByPhoneAndId(phone, orderId);
   }
 
   return (
@@ -37,11 +38,11 @@ export default async function TrackOrderPage({ searchParams }: PageProps) {
         <div className="text-center mb-12">
           <h2 className="font-playfair text-4xl md:text-5xl text-[#2C302E] mb-4">Lacak Pesanan</h2>
           <p className="font-sans text-[#5A635E] max-w-2xl mx-auto">
-            Masukkan nomor WhatsApp yang Anda gunakan saat checkout untuk melihat status pesanan Anda.
+            Masukkan ID Transaksi dan Nomor WhatsApp yang digunakan saat checkout untuk melihat status pesanan Anda. Kombinasi ini diperlukan demi keamanan data pesanan Anda.
           </p>
         </div>
         
-        <TrackOrderForm initialPhone={phone} />
+        <TrackOrderForm initialPhone={phone} initialOrderId={orderId} />
 
         {searchResults && (
           <div className="space-y-6">
@@ -50,13 +51,13 @@ export default async function TrackOrderPage({ searchParams }: PageProps) {
             </h3>
             {searchResults.length === 0 ? (
               <div className="bg-white p-8 text-center border border-[#E8D9D2] text-[#5A635E] font-sans">
-                Tidak ada pesanan yang ditemukan untuk nomor {phone}.
+                Tidak ada pesanan yang ditemukan dengan ID "{orderId}" dan Nomor WhatsApp "{phone}".
               </div>
             ) : (
               searchResults.map(order => (
-                <Link 
-                  href={`/orders/${order.id}`} 
-                  key={order.id} 
+                <Link
+                  href={`/orders/${order.id}`}
+                  key={order.id}
                   className="bg-white border border-[#E8D9D2] p-6 hover:shadow-md transition-shadow cursor-pointer group flex flex-col sm:flex-row justify-between sm:items-center gap-4 block"
                 >
                   <div>

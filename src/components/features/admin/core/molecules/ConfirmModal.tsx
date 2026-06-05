@@ -2,7 +2,6 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertCircle, X } from "lucide-react";
-import { Button } from "@/components/ui/Button";
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -28,58 +27,67 @@ export const ConfirmModal = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-[#2C302E]/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 p-6"
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ type: "spring", duration: 0.3 }}
+            className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl border border-gray-100 flex flex-col z-10"
           >
-            <div className="overflow-hidden rounded-2xl bg-white shadow-xl border border-[#E8D9D2]">
-              <div className="flex items-start justify-between border-b border-[#E8D9D2] px-6 py-4">
-                <div className="flex items-center gap-3">
-                  <div className={`rounded-full p-2 ${isDestructive ? 'bg-red-50 text-red-600' : 'bg-brand/10 text-brand'}`}>
-                    <AlertCircle size={20} />
-                  </div>
-                  <h3 className="font-playfair text-xl font-medium text-[#2C302E]">
-                    {title}
-                  </h3>
+            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 bg-white">
+              <div className="flex items-center gap-3">
+                <div className={`rounded-xl p-2 ${isDestructive ? 'bg-red-50 text-red-500' : 'bg-brand/10 text-brand'}`}>
+                  <AlertCircle size={20} />
                 </div>
-                <button
-                  onClick={onClose}
-                  className="rounded-lg p-2 text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition-colors"
-                >
-                  <X size={20} />
-                </button>
+                <h3 className="font-semibold text-gray-900">
+                  {title}
+                </h3>
               </div>
-              <div className="px-6 py-6 font-sans text-gray-600 leading-relaxed">
-                {message}
-              </div>
-              <div className="flex items-center justify-end gap-3 bg-gray-50/50 px-6 py-4 border-t border-[#E8D9D2]">
-                <Button variant="outline" onClick={onClose} className="border-[#E8D9D2]">
-                  {cancelText}
-                </Button>
-                <Button 
-                  onClick={() => {
-                    onConfirm();
-                    onClose();
-                  }}
-                  className={isDestructive ? 'bg-red-600 hover:bg-red-700 text-white border-0' : ''}
-                >
-                  {confirmText}
-                </Button>
-              </div>
+              <button
+                onClick={onClose}
+                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="px-5 py-5 font-sans text-sm text-gray-600 leading-relaxed bg-gray-50/30">
+              {message}
+            </div>
+            
+            <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-100 bg-white">
+              <button 
+                onClick={onClose} 
+                className="px-5 py-2.5 text-sm font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
+              >
+                {cancelText}
+              </button>
+              <button 
+                onClick={() => {
+                  onConfirm();
+                  onClose();
+                }}
+                className={`px-5 py-2.5 text-sm font-semibold rounded-xl transition-all shadow-sm ${
+                  isDestructive 
+                    ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/20' 
+                    : 'bg-brand hover:bg-brand-hover text-white shadow-brand/20'
+                }`}
+              >
+                {confirmText}
+              </button>
             </div>
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>
   );
 };
+

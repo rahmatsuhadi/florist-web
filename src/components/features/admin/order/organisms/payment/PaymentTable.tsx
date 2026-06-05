@@ -32,19 +32,7 @@ export const PaymentTable = async ({ searchParams }: PaymentTableProps) => {
 
   return (
     <TableContainer>
-      <TableWrapper>
-        <TableHeader>
-          <TableHead>No. Bayar</TableHead>
-          <TableHead>ID Order</TableHead>
-          <TableHead>Pelanggan</TableHead>
-          <TableHead>Metode</TableHead>
-          <TableHead>Update Terakhir</TableHead>
-          <TableHead>Nominal</TableHead>
-          <TableHead className="text-center">Status</TableHead>
-          <TableHead className="text-right">Tindakan</TableHead>
-        </TableHeader>
-        <PaymentTableClient payments={currentPayments} />
-      </TableWrapper>
+      <PaymentTableClient payments={currentPayments} />
 
       {totalItems > 0 && (
         <TablePagination

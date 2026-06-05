@@ -13,7 +13,7 @@ import { OrderProductList } from "../../molecules/order/OrderProductList";
 import { OrderWhatsAppPanel } from "../../molecules/order/OrderWhatsAppPanel";
 import { OrderStatusUpdater } from "../../molecules/order/OrderStatusUpdater";
 
-export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems }) => {
+export const OrderDetails = ({ initialOrder, storeName }: { initialOrder: OrderWithItems, storeName: string }) => {
   const router = useRouter();
   const transaction = initialOrder;
 
@@ -65,7 +65,7 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <div className="lg:col-span-2 space-y-6">
           {/* Urgent Warning */}
           {isUrgentOrder({ ...transaction, status: optimisticStatus }) && (
@@ -94,9 +94,12 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
             </div>
           )}
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+            <OrderCustomerInfo transaction={transaction} />
+            <OrderShippingInfo transaction={transaction} />
+          </div>
+
           <OrderProductList transaction={transaction} />
-          <OrderShippingInfo transaction={transaction} />
-          <OrderWhatsAppPanel transaction={transaction} status={optimisticStatus} />
         </div>
 
         <div className="lg:col-span-1 space-y-6">
@@ -105,7 +108,7 @@ export const OrderDetails = ({ initialOrder }: { initialOrder: OrderWithItems })
             currentStatus={optimisticStatus} 
             setOptimisticStatus={setOptimisticStatus} 
           />
-          <OrderCustomerInfo transaction={transaction} />
+          <OrderWhatsAppPanel transaction={transaction} status={optimisticStatus} storeName={storeName} />
         </div>
       </div>
     </motion.div>

@@ -16,6 +16,8 @@ export interface CreateOrderData {
   deliveryMethod?: "delivery" | "pickup";
   scheduledDate?: string;
   scheduledTime?: string;
+  locationId?: number;
+  shippingCost?: string;
   totalAmount: string;
   items: {
     productId?: number;
@@ -32,7 +34,7 @@ export interface CreateOrderData {
 import { snap } from "@/lib/midtrans";
 import { payments } from "@/db/schema";
 import { createNotification } from "@/services/admin/notificationService";
-import { formatIdr } from "@/utils/format";
+import { formatIdr, formatPhoneNumber } from "@/utils/format";
 
 export async function createOrder(data: CreateOrderData) {
   try {
@@ -47,7 +49,7 @@ export async function createOrder(data: CreateOrderData) {
     const [newOrder] = await db.insert(orders).values({
       id: uniqueOrderId,
       customerName: data.customerName,
-      customerPhone: data.customerPhone,
+      customerPhone: formatPhoneNumber(data.customerPhone),
       customerAddress: data.customerAddress,
       customerNotes: data.customerNotes || "",
       customerLatitude: data.customerLatitude || null,
@@ -55,6 +57,8 @@ export async function createOrder(data: CreateOrderData) {
       deliveryMethod: data.deliveryMethod || "delivery",
       scheduledDate: data.scheduledDate || null,
       scheduledTime: data.scheduledTime || null,
+      locationId: data.locationId || null,
+      shippingCost: data.shippingCost || null,
       totalAmount: data.totalAmount,
       status: "Menunggu Pembayaran",
     }).returning();
@@ -140,12 +144,13 @@ export async function createOrder(data: CreateOrderData) {
   }
 }
 
-import { desc } from "drizzle-orm";
+import { desc, and } from "drizzle-orm";
 import { OrderItemType, OrderType, OrderWithItems } from "../admin/orderService";
 
-export async function getOrdersByPhone(phone: string): Promise<OrderWithItems[]> {
+export async function getOrdersByPhoneAndId(phone: string, orderId: string): Promise<OrderWithItems[]> {
   try {
-    const userOrders = await db.select().from(orders).where(eq(orders.customerPhone, phone)).orderBy(desc(orders.createdAt));
+    const formattedPhone = formatPhoneNumber(phone);
+    const userOrders = await db.select().from(orders).where(and(eq(orders.customerPhone, formattedPhone), eq(orders.id, orderId))).orderBy(desc(orders.createdAt));
     if (userOrders.length === 0) return [];
 
     const orderIds = userOrders.map(o => o.id);

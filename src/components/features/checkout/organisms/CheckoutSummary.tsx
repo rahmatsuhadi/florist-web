@@ -10,6 +10,7 @@ interface Props {
   cart: CartItem[];
   cartTotal: number;
   deliveryMethod: "delivery" | "pickup";
+  shippingCost?: number;
   isSubmitting: boolean;
   handleCheckout: () => void;
 }
@@ -18,6 +19,7 @@ export const CheckoutSummary: React.FC<Props> = ({
   cart,
   cartTotal,
   deliveryMethod,
+  shippingCost = 0,
   isSubmitting,
   handleCheckout,
 }) => {
@@ -53,13 +55,15 @@ export const CheckoutSummary: React.FC<Props> = ({
           <span>Subtotal</span>
           <span>{formatIdr(cartTotal)}</span>
         </div>
-        {/* <div className="flex justify-between text-sm text-gray-600">
-          <span>Ongkos Kirim</span>
-          <span>{deliveryMethod === "delivery" ? "Dihitung nanti" : "Rp 0"}</span>
-        </div> */}
+        {deliveryMethod === "delivery" && (
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>Biaya Pengiriman</span>
+            <span>{shippingCost > 0 ? formatIdr(shippingCost) : "Gratis / Belum Dipilih"}</span>
+          </div>
+        )}
         <div className="flex justify-between font-bold text-lg text-[#2C302E] pt-3 border-t border-dashed border-gray-200">
-          <span>Total</span>
-          <span>{formatIdr(cartTotal)}</span>
+          <span>Total Keseluruhan</span>
+          <span>{formatIdr(cartTotal + (deliveryMethod === "delivery" ? shippingCost : 0))}</span>
         </div>
       </div>
 

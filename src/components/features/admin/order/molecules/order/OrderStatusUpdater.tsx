@@ -36,13 +36,13 @@ export const OrderStatusUpdater = ({ transaction, currentStatus, setOptimisticSt
         <h3 className="font-serif text-lg font-semibold text-gray-900">Kelola Status & Pembayaran</h3>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div>
-          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2.5">
             Ubah Status Transaksi
-            {isPending && <Loader2 size={12} className="inline animate-spin ml-2 text-brand" />}
+            {isPending && <Loader2 size={14} className="inline animate-spin ml-2 text-brand" />}
           </label>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-3">
             {(() => {
               // @ts-ignore
               const isPickup = transaction.deliveryMethod === "pickup";
@@ -60,9 +60,9 @@ export const OrderStatusUpdater = ({ transaction, currentStatus, setOptimisticSt
                   key={st}
                   onClick={() => handleStatusChange(st)}
                   disabled={isPending || currentStatus === st}
-                  className={`py-2 px-3 rounded-xl border font-semibold text-xs transition-all ${currentStatus === st
+                  className={`py-2.5 px-3 rounded-xl border font-semibold text-sm transition-all ${currentStatus === st
                     ? 'bg-brand text-white border-brand cursor-default'
-                    : 'border-gray-200 text-gray-500 hover:bg-gray-50'
+                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'
                     } ${isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {st}
@@ -70,29 +70,6 @@ export const OrderStatusUpdater = ({ transaction, currentStatus, setOptimisticSt
               ));
             })()}
           </div>
-        </div>
-      </div>
-
-      <div className="border-t pt-4 space-y-2.5">
-        {transaction.items.map(item => (
-          <div key={`item-${item.id}`}>
-            <div className="flex justify-between text-xs text-gray-500 mb-1">
-              <span className="font-medium text-gray-700">{item.productName} (x{item.quantity})</span>
-              <span>{formatIdr(Number(item.productPrice) * item.quantity)}</span>
-            </div>
-
-            {(item.variantDetails as VariantDetail[] | null)?.map((v, idx) => (
-              <div key={idx} className="flex justify-between text-xs text-gray-400 pl-2">
-                <span className="truncate max-w-[150px]">- {v.name}</span>
-                <span>{v.priceType === "replace" ? "Ganti Harga" : `+${formatIdr(v.price)}`}</span>
-              </div>
-            ))}
-          </div>
-        ))}
-
-        <div className="border-t border-dashed pt-3 flex justify-between font-serif font-bold text-gray-900 text-base">
-          <span>Total Tagihan</span>
-          <span className="text-brand font-sans font-bold">{formatIdr(Number(transaction.totalAmount))}</span>
         </div>
       </div>
     </div>

@@ -1,11 +1,11 @@
 import { OrderWithItems } from "@/services/admin/orderService";
 import { formatIdr } from "@/utils/format";
 
-export const generateWhatsAppMessage = (transaction: OrderWithItems, status: string) => {
-  const baseGreeting = `Halo ${transaction.customerName}, terima kasih telah mempercayakan momen spesial Anda kepada Magnolia Florist. ✨\n\n`;
+export const generateWhatsAppMessage = (transaction: OrderWithItems, status: string, storeName: string = "Magnolia Florist") => {
+  const baseGreeting = `Halo ${transaction.customerName}, terima kasih telah mempercayakan momen spesial Anda kepada ${storeName}. ✨\n\n`;
   if (status === "Menunggu Pembayaran") {
     return encodeURIComponent(
-      `${baseGreeting}Kami ingin mengonfirmasi pesanan rangkaian *${transaction.items.length > 0 ? transaction.items[0].productName : "bunga"}* Anda dengan kode transaksi *${transaction.id}* sebesar *${formatIdr(Number(transaction.totalAmount))}*.\n\nMohon lakukan transfer ke rekening bank kami dan kirimkan bukti transfer ke chat ini agar kami dapat memproses pesanan Anda. Terima kasih!`
+      `${baseGreeting}Kami ingin mengonfirmasi pesanan rangkaian *${transaction.items.length > 0 ? transaction.items[0].productName : "bunga"}* Anda dengan kode transaksi *${transaction.id}* sebesar *${formatIdr(Number(transaction.totalAmount))}*.\n\nMohon segera menyelesaikan pembayaran Anda agar pesanan Anda dapat segera kami proses. Terima kasih!`
     );
   } else if (status === "Sudah Dibayar") {
     return encodeURIComponent(

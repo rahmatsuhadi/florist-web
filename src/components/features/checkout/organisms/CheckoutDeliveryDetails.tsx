@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Calendar, Clock, MapPin, Store } from "lucide-react";
 import dynamic from "next/dynamic";
 import { Input } from "@/components/ui/Input";
@@ -15,7 +15,12 @@ interface CheckoutData {
   longitude: string;
   scheduledDate: string;
   scheduledTime: string;
+  locationId: number | undefined;
+  shippingCost: number;
+  isLocationComplete: boolean;
 }
+
+import { PublicLocationNode } from "@/services/public/locationService";
 
 interface Props {
   deliveryMethod: "delivery" | "pickup";
@@ -23,6 +28,7 @@ interface Props {
   setCheckoutData: (data: CheckoutData) => void;
   errors: Record<string, string>;
   setErrors: (errors: any) => void;
+  locationTree: PublicLocationNode[];
 }
 
 const timeSlotOptions = [
@@ -45,7 +51,82 @@ export const CheckoutDeliveryDetails: React.FC<Props> = ({
   setCheckoutData,
   errors,
   setErrors,
+  locationTree,
 }) => {
+  const [selectedPath, setSelectedPath] = useState<number[]>([]);
+
+  // Calculate the cascading lists based on the selectedPath
+  const getLevels = () => {
+    const levels = [];
+    let currentOptions = locationTree;
+
+    levels.push(currentOptions);
+
+    for (const selectedId of selectedPath) {
+      const selectedNode = currentOptions.find(n => n.id === selectedId);
+      if (selectedNode && selectedNode.children && selectedNode.children.length > 0) {
+        currentOptions = selectedNode.children;
+        levels.push(currentOptions);
+      } else {
+        break; // Reached a leaf node or node with no children
+      }
+    }
+
+    return levels;
+  };
+
+  const handleSelectLevel = (levelIndex: number, locationIdStr: string) => {
+    if (!locationIdStr) {
+      // User cleared the selection at this level
+      const newPath = selectedPath.slice(0, levelIndex);
+      setSelectedPath(newPath);
+      updateCheckoutData(newPath);
+      return;
+    }
+
+    const locationId = parseInt(locationIdStr, 10);
+    const newPath = [...selectedPath.slice(0, levelIndex), locationId];
+    setSelectedPath(newPath);
+    updateCheckoutData(newPath);
+  };
+
+  const updateCheckoutData = (path: number[]) => {
+    if (path.length === 0) {
+      setCheckoutData({ ...checkoutData, locationId: undefined, shippingCost: 0, isLocationComplete: false });
+      return;
+    }
+
+    const lastId = path[path.length - 1];
+
+    // Resolve effective shipping cost by traversing the tree
+    let currentOptions = locationTree;
+    let effectiveCost = 0;
+
+    for (const id of path) {
+      const node = currentOptions.find(n => n.id === id);
+      if (node) {
+        if (node.shippingCost !== null) {
+          effectiveCost = node.shippingCost;
+        }
+        currentOptions = node.children || [];
+      }
+    }
+
+    // Determine if the location selection is complete (no more child levels pending)
+    // If currentOptions has children, it means there is another level that hasn't been selected yet.
+    const isComplete = currentOptions.length === 0;
+
+    setCheckoutData({
+      ...checkoutData,
+      locationId: lastId,
+      shippingCost: effectiveCost,
+      isLocationComplete: isComplete
+    });
+    if (errors.locationSelect) setErrors({ ...errors, locationSelect: "" });
+  };
+
+  const levels = getLevels();
+
   return (
     <div className="bg-white p-6 rounded-none shadow-sm border border-[#E8D9D2]">
       <h2 className="font-playfair text-xl text-[#2C302E] mb-4">Detail Waktu & Lokasi</h2>
@@ -114,7 +195,34 @@ export const CheckoutDeliveryDetails: React.FC<Props> = ({
         </div>
 
         {deliveryMethod === "delivery" && (
-          <div className="space-y-4 pt-4 border-t border-[#E8D9D2]">
+          <div className="space-y-4 pt-4 border-t border-[#E8D9D2] ">
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">Wilayah Pengiriman</label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {levels.map((options, index) => {
+                  const selectedValue = selectedPath[index]?.toString() || "";
+                  return (
+                    <Select
+                      key={index}
+                      variant="outline"
+                      icon={<MapPin size={18} />}
+                      options={options.map(loc => ({
+                        label: `${loc.name} ${loc.shippingCost !== null ? `(Rp ${loc.shippingCost.toLocaleString('id-ID')})` : ''}`,
+                        value: loc.id.toString(),
+                      }))}
+                      value={selectedValue}
+                      onChange={(e) => handleSelectLevel(index, e.target.value)}
+                      error={index === 0 ? errors.locationSelect : undefined}
+                    />
+                  );
+                })}
+              </div>
+              <p className="text-[11px] text-gray-500 mt-2">
+                *Pilih wilayah pengiriman secara bertahap (hierarki) untuk menentukan ongkos kirim yang akurat.
+              </p>
+            </div>
+
             <Textarea
               label="Alamat Lengkap"
               icon={<MapPin size={16} />}

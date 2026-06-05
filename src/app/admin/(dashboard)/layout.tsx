@@ -24,14 +24,14 @@ export default async function AdminLayout({
   const storeSettings = await getStoreSettings();
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] font-inter text-[#2D3748] ">
+    <div className="min-h-screen bg-[#FDFBF7] font-inter text-[#2D3748] relative overflow-x-hidden">
       {/* Sidebar Component */}
       <Sidebar shopInfo={storeSettings} />
 
       {/* Main Content Area */}
-      <main className="pl-64 min-h-screen flex flex-col">
+      <main className="w-full md:pl-64 min-h-screen flex flex-col transition-all duration-300">
         <Header />
-        <div className="flex-1 p-8 max-w-7xl w-full mx-auto">{children}</div>
+        <div className="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl w-full mx-auto">{children}</div>
       </main>
     </div>
   );

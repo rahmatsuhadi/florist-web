@@ -6,8 +6,9 @@ import { CheckoutCustomerInfo } from "./CheckoutCustomerInfo";
 import { CheckoutShippingMethod } from "./CheckoutShippingMethod";
 import { CheckoutDeliveryDetails } from "./CheckoutDeliveryDetails";
 import { CheckoutSummary } from "./CheckoutSummary";
+import { PublicLocationNode } from "@/services/public/locationService";
 
-export const CheckoutForm = () => {
+export const CheckoutForm = ({ locationTree }: { locationTree: PublicLocationNode[] }) => {
   const {
     cart,
     cartTotal,
@@ -41,6 +42,7 @@ export const CheckoutForm = () => {
           setCheckoutData={setCheckoutData}
           errors={errors}
           setErrors={setErrors}
+          locationTree={locationTree}
         />
       </div>
 
@@ -50,6 +52,7 @@ export const CheckoutForm = () => {
           cart={cart}
           cartTotal={cartTotal}
           deliveryMethod={deliveryMethod}
+          shippingCost={checkoutData.shippingCost}
           isSubmitting={isSubmitting}
           handleCheckout={handleCheckout}
         />

@@ -43,9 +43,21 @@ export const OrderItemsList = ({ order }: { order: OrderWithItems }) => {
         ))}
       </div>
 
-      <div className="border-t border-[#E8D9D2] pt-4 mt-4 flex justify-between items-center text-xl font-playfair text-[#2C302E]">
-        <span>Total Pesanan</span>
-        <span className="text-[#829E8D]">{formatIdr(Number(order.totalAmount))}</span>
+      <div className="border-t border-[#E8D9D2] pt-4 mt-4 space-y-2">
+        <div className="flex justify-between items-center text-sm font-sans text-gray-600">
+          <span>Subtotal</span>
+          <span>{formatIdr(Number(order.totalAmount) - (Number(order.shippingCost) || 0))}</span>
+        </div>
+        {order.deliveryMethod === "delivery" && (
+          <div className="flex justify-between items-center text-sm font-sans text-gray-600">
+            <span>Biaya Pengiriman</span>
+            <span>{order.shippingCost ? formatIdr(Number(order.shippingCost)) : "Gratis / Tidak Ditetapkan"}</span>
+          </div>
+        )}
+        <div className="flex justify-between items-center text-xl font-playfair text-[#2C302E] pt-2 border-t border-dashed border-gray-200">
+          <span>Total Keseluruhan</span>
+          <span className="text-[#829E8D] font-bold">{formatIdr(Number(order.totalAmount))}</span>
+        </div>
       </div>
     </div>
   );
